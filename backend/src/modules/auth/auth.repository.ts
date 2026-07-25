@@ -76,3 +76,13 @@ export function findRefreshTokensByUserId(userId: string) {
 export function deleteRefreshTokenForUser(id: string, userId: string) {
   return prisma.refreshToken.deleteMany({ where: { id, userId } })
 }
+
+export function createLoginHistory(data: {
+  userId?: string
+  emailAttempted: string
+  status: 'SUCCESS' | 'FAILED'
+  ipAddress?: string
+  userAgent?: string
+}) {
+  return prisma.loginHistory.create({ data })
+}

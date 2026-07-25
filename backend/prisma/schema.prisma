@@ -87,15 +87,17 @@ enum LoginStatus {
 }
 
 model LoginHistory {
-  id        String      @id @default(uuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ipAddress String?
-  userAgent String?
-  status    LoginStatus
-  createdAt DateTime    @default(now())
+  id             String      @id @default(uuid())
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailAttempted String
+  ipAddress      String?
+  userAgent      String?
+  status         LoginStatus
+  createdAt      DateTime    @default(now())
 
   @@index([userId, createdAt])
+  @@index([emailAttempted, createdAt])
   @@map("login_history")
 }
 

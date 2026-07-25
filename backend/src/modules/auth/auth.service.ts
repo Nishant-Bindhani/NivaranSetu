@@ -24,6 +24,7 @@ import {
   deleteTokenFamily,
   findRefreshTokensByUserId,
   deleteRefreshTokenForUser,
+  createLoginHistory,
 } from './auth.repository.js'
 import { exchangeCodeForToken, fetchGoogleProfile } from './auth.google.js'
 import type { RegisterInput, LoginInput } from './auth.types.js'
@@ -108,21 +109,35 @@ export async function loginUser(
   input: LoginInput,
   device?: { deviceInfo?: string; ipAddress?: string },
 ) {
+  const logAttempt = (status: 'SUCCESS' | 'FAILED', userId?: string) =>
+    createLoginHistory({
+      emailAttempted: input.email,
+      status,
+      ...(userId ? { userId } : {}),
+      ...(device?.ipAddress ? { ipAddress: device.ipAddress } : {}),
+      ...(device?.deviceInfo ? { userAgent: device.deviceInfo } : {}),
+    })
+
   const user = await findUserByEmail(input.email)
   if (!user || !user.password) {
+    await logAttempt('FAILED')
     throw new AppError('Invalid email or password', 401)
   }
 
   const validPassword = await verifyPassword(user.password, input.password)
   if (!validPassword) {
+    await logAttempt('FAILED', user.id)
     throw new AppError('Invalid email or password', 401)
   }
 
   if (!user.isEmailVerified) {
+    await logAttempt('FAILED', user.id)
     throw new AppError('Please verify your email before logging in', 403)
   }
 
   const { accessToken, refreshToken } = await issueSession(user, device)
+
+  await logAttempt('SUCCESS', user.id)
 
   return {
     accessToken,
