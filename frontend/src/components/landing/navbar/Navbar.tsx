@@ -24,33 +24,7 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion'
 import { SettingsMenu, SettingsControls } from '@/components/landing/settingsMenu/SettingsMenu'
-
-type NavLink = { label: string; to?: string; href?: string }
-
-const navGroups: { title: string; links: NavLink[] }[] = [
-  {
-    title: 'Complaints',
-    links: [
-      { label: 'Track a complaint', to: '/track' },
-      { label: 'How to file', href: '#how-it-works' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'Categories we cover', href: '#coverage' },
-      { label: 'SLA & response times', href: '#features' },
-      { label: 'Departments', href: '#departments' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'About us', href: '#trust' },
-      { label: 'FAQ', href: '#faq' },
-    ],
-  },
-]
+import { navGroups, type NavLink } from '@/components/landing/shared/navGroups'
 
 // a NavLink is either an internal route (`to`) or a plain anchor (`href`) — render whichever is set
 function renderNavLink({ label, to, href }: NavLink, className: string) {

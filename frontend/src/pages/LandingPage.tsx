@@ -7,6 +7,9 @@ import { MapShowcase } from '@/components/landing/mapShowcase/MapShowcase'
 import { Resolved } from '@/components/landing/resolved/Resolved'
 import { Channels } from '@/components/landing/channels/Channels'
 import { StatTicker } from '@/components/landing/statTicker/StatTicker'
+import { About } from '@/components/landing/about/About'
+import { Faq } from '@/components/landing/faq/Faq'
+import { Footer } from '@/components/landing/footer/Footer'
 
 export function LandingPage() {
   return (
@@ -20,6 +23,9 @@ export function LandingPage() {
       <Resolved />
       <Channels />
       <StatTicker />
+      <About />
+      <Faq />
+      <Footer />
     </>
   )
 }
