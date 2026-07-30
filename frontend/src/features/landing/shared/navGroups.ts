@@ -1,27 +1,28 @@
 // shared between Navbar and Footer, so both always show the same links —
-// one source of truth instead of two lists drifting out of sync
-export type NavLink = { label: string; to?: string; href?: string }
+// one source of truth instead of two lists drifting out of sync.
+// labelKey/titleKey point into i18n/locales/*/common.json's "nav" section
+export type NavLink = { labelKey: string; to?: string; href?: string }
 
-export const navGroups: { title: string; links: NavLink[] }[] = [
+export const navGroups: { titleKey: string; links: NavLink[] }[] = [
   {
-    title: 'Complaints',
+    titleKey: 'nav.complaints',
     links: [
-      { label: 'Track a complaint', to: '/track' },
-      { label: 'How to file', href: '#how-it-works' },
+      { labelKey: 'nav.trackComplaint', to: '/track' },
+      { labelKey: 'nav.howToFile', href: '#how-it-works' },
     ],
   },
   {
-    title: 'Resources',
+    titleKey: 'nav.resources',
     links: [
-      { label: 'Categories we cover', href: '#coverage' },
-      { label: 'SLA & response times', href: '#features' },
+      { labelKey: 'nav.categoriesWeCover', href: '#coverage' },
+      { labelKey: 'nav.slaResponseTimes', href: '#features' },
     ],
   },
   {
-    title: 'Company',
+    titleKey: 'nav.company',
     links: [
-      { label: 'About us', href: '#about' },
-      { label: 'FAQ', href: '#faq' },
+      { labelKey: 'nav.aboutUs', href: '#about' },
+      { labelKey: 'nav.faq', href: '#faq' },
     ],
   },
 ]

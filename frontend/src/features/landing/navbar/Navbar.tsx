@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Menu01Icon } from '@hugeicons/core-free-icons'
 import { Button } from '@/shared/ui/button'
@@ -27,12 +28,15 @@ import { SettingsMenu, SettingsControls } from '@/features/landing/settingsMenu/
 import { navGroups, type NavLink } from '@/features/landing/shared/navGroups'
 
 // a NavLink is either an internal route (`to`) or a plain anchor (`href`) — render whichever is set
-function renderNavLink({ label, to, href }: NavLink, className: string) {
-  if (to) return <Link key={label} to={to} className={className}>{label}</Link>
-  return <a key={label} href={href} className={className}>{label}</a>
+function renderNavLink({ labelKey, to, href }: NavLink, className: string, translate: (key: string) => string) {
+  const label = translate(labelKey)
+  if (to) return <Link key={labelKey} to={to} className={className}>{label}</Link>
+  return <a key={labelKey} href={href} className={className}>{label}</a>
 }
 
 export function Navbar() {
+  const { t: translate } = useTranslation('common')
+
   return (
     <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -55,11 +59,11 @@ export function Navbar() {
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
             {navGroups.map((group) => (
-              <NavigationMenuItem key={group.title}>
-                <NavigationMenuTrigger>{group.title}</NavigationMenuTrigger>
+              <NavigationMenuItem key={group.titleKey}>
+                <NavigationMenuTrigger>{translate(group.titleKey)}</NavigationMenuTrigger>
                 <NavigationMenuContent className="w-48">
                   {group.links.map((link) => (
-                    <NavigationMenuLink key={link.label} closeOnClick render={renderNavLink(link, '')} />
+                    <NavigationMenuLink key={link.labelKey} closeOnClick render={renderNavLink(link, '', translate)} />
                   ))}
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -70,8 +74,8 @@ export function Navbar() {
         {/* desktop auth buttons — hidden below md breakpoint */}
         <div className="hidden items-center gap-2 md:flex">
           <SettingsMenu />
-          <Button variant="ghost" nativeButton={false} render={<Link to="/login">Log in</Link>} />
-          <Button nativeButton={false} render={<Link to="/register">Register</Link>} />
+          <Button variant="ghost" nativeButton={false} render={<Link to="/login">{translate('login')}</Link>} />
+          <Button nativeButton={false} render={<Link to="/register">{translate('register')}</Link>} />
         </div>
 
         {/* mobile hamburger — hidden at md and above */}
@@ -83,22 +87,22 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
-              <SheetTitle>Menu</SheetTitle>
+              <SheetTitle>{translate('menu')}</SheetTitle>
             </SheetHeader>
 
             <Accordion className="border-none px-6">
               {navGroups.map((group) => (
-                <AccordionItem key={group.title} value={group.title}>
-                  <AccordionTrigger>{group.title}</AccordionTrigger>
+                <AccordionItem key={group.titleKey} value={group.titleKey}>
+                  <AccordionTrigger>{translate(group.titleKey)}</AccordionTrigger>
                   <AccordionContent>
                     {group.links.map((link) =>
-                      renderNavLink(link, 'block rounded-md p-2 text-sm no-underline hover:bg-muted'),
+                      renderNavLink(link, 'block rounded-md p-2 text-sm no-underline hover:bg-muted', translate),
                     )}
                   </AccordionContent>
                 </AccordionItem>
               ))}
               <AccordionItem value="Settings">
-                <AccordionTrigger>Settings</AccordionTrigger>
+                <AccordionTrigger>{translate('settings')}</AccordionTrigger>
                 <AccordionContent>
                   <SettingsControls />
                 </AccordionContent>
@@ -106,8 +110,8 @@ export function Navbar() {
             </Accordion>
 
             <div className="mt-auto flex flex-col gap-2 p-6">
-              <Button variant="outline" nativeButton={false} render={<Link to="/login">Log in</Link>} />
-              <Button nativeButton={false} render={<Link to="/register">Register</Link>} />
+              <Button variant="outline" nativeButton={false} render={<Link to="/login">{translate('login')}</Link>} />
+              <Button nativeButton={false} render={<Link to="/register">{translate('register')}</Link>} />
             </div>
           </SheetContent>
         </Sheet>

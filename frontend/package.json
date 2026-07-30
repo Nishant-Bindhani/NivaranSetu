@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node inline-build.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -23,10 +23,13 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "h3-js": "^4.5.0",
+    "i18next": "^26.3.6",
+    "i18next-browser-languagedetector": "^8.2.1",
     "leaflet": "^1.9.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.81.0",
+    "react-i18next": "^17.0.11",
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.18.1",

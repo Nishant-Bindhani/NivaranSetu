@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "complaints": "Complaints",
+    "resources": "Resources",
+    "company": "Company",
+    "trackComplaint": "Track a complaint",
+    "howToFile": "How to file",
+    "categoriesWeCover": "Categories we cover",
+    "slaResponseTimes": "SLA & response times",
+    "aboutUs": "About us",
+    "faq": "FAQ"
+  },
+  "login": "Log in",
+  "register": "Register",
+  "menu": "Menu",
+  "settings": "Settings"
+}

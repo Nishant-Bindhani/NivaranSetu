@@ -1,0 +1,127 @@
+{
+  "hero": {
+    "title": "Grievance Redressal Made Simple",
+    "body": "Lodge your complaint online, through WhatsApp, or by email. Track the status of your grievance at every stage, from submission to verified resolution.",
+    "lodgeComplaint": "Lodge a Complaint",
+    "trackStatus": "Track Complaint Status",
+    "appMockup": {
+      "windowTitle": "My Complaints",
+      "category": "Electricity",
+      "ticketNumber": "#48213",
+      "complaintTitle": "Streetlight not working, Sector 12 main road",
+      "steps": {
+        "reported": "Reported",
+        "reviewed": "Reviewed",
+        "assigned": "Officer assigned",
+        "resolved": "Resolved"
+      }
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "How it actually works",
+    "subtitle": "A clear process from submission to resolution, with full visibility at every step.",
+    "steps": {
+      "report": { "title": "You report it", "body": "Snap a photo, drop a pin, tell us what's wrong. Takes about two minutes." },
+      "route": { "title": "We route it", "body": "No guessing which department to call. We figure that out for you, instantly." },
+      "assign": { "title": "Someone shows up", "body": "An officer gets assigned and actually does the work, with photos to prove it." },
+      "confirm": { "title": "You confirm it's fixed", "body": "Not us saying it's done. You saying it's done." }
+    }
+  },
+  "features": {
+    "eyebrow": "Why it works",
+    "title": "Built so complaints can't fall through the cracks",
+    "body": "The system is designed around accountability, not paperwork. Every case is tracked, timed, and closed only when it's genuinely done.",
+    "items": {
+      "timeBound": { "title": "Time-bound response", "body": "Every complaint carries a deadline. If a department misses it, the case escalates automatically instead of going quiet." },
+      "routing": { "title": "Automatic routing", "body": "Complaints reach the right department the moment they are filed. No forwarding, no dead ends, no \"not my desk\"." },
+      "verifiedClosure": { "title": "Citizen-verified closure", "body": "A case is only marked resolved once you confirm it. The department cannot close it on your behalf." },
+      "private": { "title": "Private by default", "body": "Your contact details stay hidden from public view. Only the assigned officer sees what they need to act on your case." }
+    }
+  },
+  "coverage": {
+    "eyebrow": "Categories we cover",
+    "title": "Every civic issue, one place to report it",
+    "body": "If it's a public service, it's covered. Complaints route straight to the department responsible, no need to know who to call.",
+    "categories": {
+      "electricity": { "title": "Electricity", "body": "Power outages, faulty meters, exposed wiring, billing disputes." },
+      "water": { "title": "Water & Sanitation", "body": "Supply disruptions, leaks, contamination, drainage and sewage issues." },
+      "roads": { "title": "Roads & Infrastructure", "body": "Potholes, broken streetlights, damaged footpaths, traffic signals." },
+      "waste": { "title": "Waste Management", "body": "Missed collections, illegal dumping, overflowing bins, cleanliness." },
+      "safety": { "title": "Public Safety", "body": "Unsafe areas, vandalism, encroachments, accident-prone spots." },
+      "municipal": { "title": "Municipal Services", "body": "Permits, licenses, property records, building code violations." }
+    }
+  },
+  "mapShowcase": {
+    "eyebrow": "See it on the map",
+    "title": "Every complaint is pinned to a real location",
+    "body": "No more describing \"the road near the old bus stop.\" A GPS pin means officers go straight to the right spot, and departments can spot clusters before they become bigger problems.",
+    "pins": {
+      "pothole": { "category": "Roads", "label": "Pothole reported", "status": "Assigned" },
+      "streetlight": { "category": "Electricity", "label": "Streetlight outage", "status": "In progress" },
+      "pipeLeak": { "category": "Water", "label": "Pipe leak", "status": "Resolved" },
+      "overflowingBin": { "category": "Waste", "label": "Overflowing bin", "status": "Assigned" },
+      "drainageBlocked": { "category": "Water", "label": "Drainage blocked", "status": "In progress" }
+    }
+  },
+  "resolved": {
+    "eyebrow": "Not just closed. Verified.",
+    "titleBefore": "A ticket only closes when",
+    "titleHighlight": "you",
+    "titleAfter": "say it's done.",
+    "body": "Officers submit before-and-after proof. You review it. If it's not actually fixed, it reopens automatically no arguing, no phone calls.",
+    "claims": {
+      "signOff": { "lead": "Citizen sign-off.", "rest": "required on every closure." },
+      "noSelfCert": { "lead": "No self-certification.", "rest": "an officer's word alone never closes a case." },
+      "reopens": { "lead": "Rejected proof reopens it.", "rest": "automatically, no phone calls needed." }
+    },
+    "recent": {
+      "streetlight": { "title": "Streetlight repaired", "location": "Sector 12, main road", "timeValue": "3", "timeUnit": "days" },
+      "waterLeak": { "title": "Water leak fixed", "location": "MG Road junction", "timeValue": "1", "timeUnit": "day" },
+      "pothole": { "title": "Pothole filled", "location": "Ring Road, near Metro station", "timeValue": "4", "timeUnit": "days" }
+    }
+  },
+  "channels": {
+    "title": "File it your way",
+    "subtitle": "No new app to learn. Reach out however's easiest.",
+    "options": {
+      "web": { "title": "Web", "body": "Fill a short form, attach a photo, drop a pin. Done in under two minutes." },
+      "whatsapp": { "title": "WhatsApp", "body": "Message a photo and a line of text to a number you've already got saved." },
+      "email": { "title": "Email", "body": "Send it the old-fashioned way. It still gets read and tracked like everything else." }
+    }
+  },
+  "statTicker": {
+    "caption": "Live figures updated in real time as complaints are filed and resolved.",
+    "stats": {
+      "resolved": "Complaints resolved",
+      "avgTime": "Avg. resolution time",
+      "departments": "Departments onboarded",
+      "citizens": "Citizens signed up"
+    }
+  },
+  "about": {
+    "eyebrow": "About us",
+    "titleBefore": "Built to make complaints",
+    "titleHighlight": "easier to file",
+    "titleAfter": ", and easier to fix.",
+    "body": "NivaranSetu started in 2026, built from India, with one goal: make it simple for anyone to report a civic issue and actually see it resolved.",
+    "photoPlaceholder": "Your photo"
+  },
+  "faq": {
+    "eyebrow": "Questions",
+    "titleBefore": "The stuff",
+    "titleHighlight": "everyone asks",
+    "questions": {
+      "free": { "question": "Is it free to file a complaint?", "answer": "Yes. Filing, tracking, and everything else on NivaranSetu is completely free." },
+      "account": { "question": "Do I need an account to file a complaint?", "answer": "Yes. Whether you file on the website, over WhatsApp, or by email, it's tied to your account — that's what lets you track it and get updates later." },
+      "resolutionTime": { "question": "How long does it take to get resolved?", "answer": "It depends on the category, but every complaint has a target response time. If a department misses it, the case escalates automatically instead of sitting untouched." },
+      "verified": { "question": "How do I know it's actually fixed, not just marked closed?", "answer": "The officer has to submit proof before a case can close, and you get to review it. If it's not actually done, you can reject it and it reopens." },
+      "channels": { "question": "Can I file the same complaint through WhatsApp or email instead of the website?", "answer": "Yes — web, WhatsApp, and email all work the same way. Use whichever is easiest for you." }
+    }
+  },
+  "footer": {
+    "tagline": "Report civic issues, track them to resolution, across web, WhatsApp, and email.",
+    "copyright": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}

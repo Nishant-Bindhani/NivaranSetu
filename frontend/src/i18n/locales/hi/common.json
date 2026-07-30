@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "complaints": "शिकायतें",
+    "resources": "संसाधन",
+    "company": "कंपनी",
+    "trackComplaint": "शिकायत ट्रैक करें",
+    "howToFile": "कैसे दर्ज करें",
+    "categoriesWeCover": "हमारी श्रेणियाँ",
+    "slaResponseTimes": "SLA और प्रतिक्रिया समय",
+    "aboutUs": "हमारे बारे में",
+    "faq": "सामान्य प्रश्न"
+  },
+  "login": "लॉग इन करें",
+  "register": "रजिस्टर करें",
+  "menu": "मेनू",
+  "settings": "सेटिंग्स"
+}

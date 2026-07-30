@@ -95,19 +95,6 @@
     }
 }
 
-/* high contrast mode — flips text/border colors to pure black/white for max readability */
-[data-contrast="high"] {
-  --foreground: oklch(0 0 0);
-  --border: oklch(0 0 0);
-  --muted-foreground: oklch(0.1 0 0);
-}
-
-.dark[data-contrast="high"] {
-  --foreground: oklch(1 0 0);
-  --border: oklch(1 0 0);
-  --muted-foreground: oklch(0.9 0 0);
-}
-
 /* horizontal marquee, used by the stats ticker */
 @keyframes marquee {
   from { transform: translateX(0); }

@@ -1,27 +1,21 @@
+import { useTranslation } from 'react-i18next'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { CheckmarkBadge01Icon, Location01Icon } from '@hugeicons/core-free-icons'
 import { useTypewriter } from '@/shared/hooks/useTypewriter'
 
-const RECENT_RESOLUTIONS = [
-  { title: 'Streetlight repaired', location: 'Sector 12, main road', time: '3 days' },
-  { title: 'Water leak fixed', location: 'MG Road junction', time: '1 day' },
-  { title: 'Pothole filled', location: 'Ring Road, near Metro station', time: '4 days' },
-]
-
-// claims about how the system is designed to work, not fabricated statistics —
-// there's no real ticket volume yet to report a percentage honestly.
-// `lead` types out big and bold; `rest` appears smaller and quieter once
-// the lead is fully typed — real size/weight contrast, not one flat line
-const CLAIMS = [
-  { lead: 'Citizen sign-off.', rest: 'required on every closure.' },
-  { lead: 'No self-certification.', rest: "an officer's word alone never closes a case." },
-  { lead: 'Rejected proof reopens it.', rest: 'automatically, no phone calls needed.' },
-]
-const CLAIM_LEADS = CLAIMS.map((claim) => claim.lead)
+const RECENT_RESOLUTION_KEYS = ['streetlight', 'waterLeak', 'pothole']
+const CLAIM_KEYS = ['signOff', 'noSelfCert', 'reopens']
 
 export function Resolved() {
-  const { text: typedLead, index, phase } = useTypewriter(CLAIM_LEADS, 40, 3200)
-  const restText = CLAIMS[index].rest
+  const { t: translate } = useTranslation('landing')
+
+  // claims about how the system is designed to work, not fabricated statistics —
+  // there's no real ticket volume yet to report a percentage honestly.
+  // `lead` types out big and bold; `rest` appears smaller and quieter once
+  // the lead is fully typed — real size/weight contrast, not one flat line
+  const claimLeads = CLAIM_KEYS.map((key) => translate(`resolved.claims.${key}.lead`))
+  const { text: typedLead, index, phase } = useTypewriter(claimLeads, 40, 3200)
+  const restText = translate(`resolved.claims.${CLAIM_KEYS[index]}.rest`)
   const showRest = phase === 'pausing'
 
   return (
@@ -31,15 +25,15 @@ export function Resolved() {
           {/* left: the pitch, big typographic moment */}
           <div>
             <p className="text-sm font-medium tracking-[0.2em] text-emerald-600 uppercase dark:text-emerald-400">
-              Not just closed. Verified.
+              {translate('resolved.eyebrow')}
             </p>
             <h2 className="mt-4 text-4xl leading-[1.05] font-bold text-balance sm:text-5xl">
-              A ticket only closes when{' '}
-              <span className="text-emerald-600 dark:text-emerald-400">you</span> say it's done.
+              {translate('resolved.titleBefore')}{' '}
+              <span className="text-emerald-600 dark:text-emerald-400">{translate('resolved.titleHighlight')}</span>{' '}
+              {translate('resolved.titleAfter')}
             </h2>
             <p className="mt-6 max-w-md text-lg text-muted-foreground">
-              Officers submit before-and-after proof. You review it. If it's not actually
-              fixed, it reopens automatically no arguing, no phone calls.
+              {translate('resolved.body')}
             </p>
 
             <div className="mt-10 border-t pt-6">
@@ -70,24 +64,24 @@ export function Resolved() {
               duration number, the actual proof point (fast turnaround), not a
               fabricated aggregate stat */}
           <div className="space-y-3">
-            {RECENT_RESOLUTIONS.map((item) => (
+            {RECENT_RESOLUTION_KEYS.map((key) => (
               <div
-                key={item.title}
+                key={key}
                 className="flex items-center gap-5 rounded-xl border bg-card/80 p-5 backdrop-blur-sm"
               >
                 <div className="flex shrink-0 flex-col items-center leading-none">
                   <span className="font-heading text-4xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-                    {item.time.split(' ')[0]}
+                    {translate(`resolved.recent.${key}.timeValue`)}
                   </span>
                   <span className="mt-1 text-[10px] font-semibold tracking-[0.15em] text-muted-foreground uppercase">
-                    {item.time.split(' ')[1]}
+                    {translate(`resolved.recent.${key}.timeUnit`)}
                   </span>
                 </div>
                 <div className="min-w-0 border-l pl-5">
-                  <p className="font-medium">{item.title}</p>
+                  <p className="font-medium">{translate(`resolved.recent.${key}.title`)}</p>
                   <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
                     <HugeiconsIcon icon={Location01Icon} strokeWidth={2} className="size-3.5 shrink-0" />
-                    {item.location}
+                    {translate(`resolved.recent.${key}.location`)}
                   </p>
                 </div>
                 <HugeiconsIcon

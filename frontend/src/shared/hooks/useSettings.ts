@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import i18n from '@/i18n/config'
 
 type Theme = 'light' | 'dark'
 type Language = 'en' | 'hi'
@@ -9,7 +10,6 @@ const STORAGE_KEY = 'nivaransetu-settings'
 type Settings = {
   theme: Theme
   textScaleIndex: number
-  highContrast: boolean
   language: Language
 }
 
@@ -20,19 +20,25 @@ function loadSettings(): Settings {
   return {
     theme: 'light',
     textScaleIndex: 1,
-    highContrast: false,
     language: 'en',
   }
 }
 
 export function useSettings() {
+  /*
+   * `loadSettings` is passed WITHOUT calling it (no parentheses).
+   * React only invokes it once, on the very first render — this is React's
+   * "lazy initializer" pattern. If we wrote `useState(loadSettings())`
+   * instead, that function would run and re-parse localStorage on every
+   * single re-render, which is wasted work for a value that never needs
+   * recomputing after the initial load.
+   */
   const [settings, setSettings] = useState<Settings>(loadSettings)
 
   // apply settings to the page whenever they change
   useEffect(() => {
     document.documentElement.classList.toggle('dark', settings.theme === 'dark')
     document.documentElement.style.setProperty('--text-scale', String(TEXT_SCALE_STEPS[settings.textScaleIndex]))
-    document.documentElement.setAttribute('data-contrast', settings.highContrast ? 'high' : 'normal')
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
   }, [settings])
 
@@ -47,10 +53,22 @@ export function useSettings() {
       setSettings((s) => ({ ...s, textScaleIndex: Math.max(s.textScaleIndex - 1, 0) })),
     resetTextSize: () => setSettings((s) => ({ ...s, textScaleIndex: 1 })),
 
-    highContrast: settings.highContrast,
-    setHighContrast: (highContrast: boolean) => setSettings((s) => ({ ...s, highContrast })),
-
     language: settings.language,
-    setLanguage: (language: Language) => setSettings((s) => ({ ...s, language })),
+    /*
+     * Two independent things need to happen here, not one:
+     * 1. i18n.changeLanguage() tells the i18next ENGINE to switch — every
+     *    component elsewhere using useTranslation() re-renders with new
+     *    text automatically, via i18next's own React Context subscription.
+     *    This has nothing to do with THIS hook's own state.
+     * 2. setSettings() keeps this hook's own record in sync, so
+     *    `settings.language` correctly reports the new value (used to
+     *    highlight the right EN/HI button) and gets persisted to
+     *    localStorage by the effect above.
+     * Skipping either one leaves the UI out of sync with what's displayed.
+     */
+    setLanguage: (language: Language) => {
+      i18n.changeLanguage(language)
+      setSettings((s) => ({ ...s, language }))
+    },
   }
 }

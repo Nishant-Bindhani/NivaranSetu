@@ -1,7 +1,6 @@
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Settings01Icon } from '@hugeicons/core-free-icons'
 import { Button } from '@/shared/ui/button'
-import { Switch } from '@/shared/ui/switch'
 import {
   Popover,
   PopoverTrigger,
@@ -49,11 +48,6 @@ export function SettingsControls() {
             A+
           </Button>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span>High contrast</span>
-        <Switch checked={settings.highContrast} onCheckedChange={settings.setHighContrast} />
       </div>
 
       <div className="flex items-center justify-between">
