@@ -17,6 +17,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetClose,
 } from '@/shared/ui/sheet'
 import {
   Accordion,
@@ -95,9 +96,12 @@ export function Navbar() {
                 <AccordionItem key={group.titleKey} value={group.titleKey}>
                   <AccordionTrigger>{translate(group.titleKey)}</AccordionTrigger>
                   <AccordionContent>
-                    {group.links.map((link) =>
-                      renderNavLink(link, 'block rounded-md p-2 text-sm no-underline hover:bg-muted', translate),
-                    )}
+                    {group.links.map((link) => (
+                      <SheetClose
+                        key={link.labelKey}
+                        render={renderNavLink(link, 'block rounded-md p-2 text-sm no-underline hover:bg-muted', translate)}
+                      />
+                    ))}
                   </AccordionContent>
                 </AccordionItem>
               ))}
