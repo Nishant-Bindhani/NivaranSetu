@@ -135,6 +135,15 @@
       "routed": "Routed",
       "assigned": "Assigned",
       "resolved": "Resolved"
+    },
+    "verifyEmail": {
+      "panelTitle": "Almost there.",
+      "verifying": "Verifying your email...",
+      "successTitle": "Email verified",
+      "successBody": "Your account is ready. You can log in now.",
+      "errorTitle": "Verification failed",
+      "errorBody": "This link is invalid or has expired. Try registering again to get a new one.",
+      "missingTokenBody": "This link is missing its verification code. Check the link in your email and try again."
     }
   },
   "footer": {

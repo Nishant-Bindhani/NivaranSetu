@@ -26,3 +26,8 @@ export async function getMeRequest(accessToken: string) {
   })
   return response.data
 }
+
+export async function verifyEmailRequest(token: string) {
+  const response = await api.post<{ success: true; message: string }>('/v1/auth/verify-email', { token })
+  return response.data
+}
