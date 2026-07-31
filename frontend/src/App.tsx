@@ -1,5 +1,9 @@
+import { Routes, Route } from 'react-router-dom'
 import { LandingPage } from '@/pages/LandingPage'
+import { LoginPage } from '@/features/auth/login/LoginPage'
+import { RegisterPage } from '@/features/auth/register/RegisterPage'
 import { useSettings } from '@/shared/hooks/useSettings'
+import { useSessionBootstrap } from '@/features/auth/hooks/useSessionBootstrap'
 
 function App() {
   /*
@@ -12,7 +16,20 @@ function App() {
    */
   useSettings()
 
-  return <LandingPage />
+  const isBootstrapping = useSessionBootstrap()
+
+  if (isBootstrapping) {
+    return null
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<div className="p-6">Dashboard (coming soon)</div>} />
+    </Routes>
+  )
 }
 
 export default App
