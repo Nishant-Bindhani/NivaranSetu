@@ -3,12 +3,14 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/fraunces";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
     --font-heading: 'Space Grotesk Variable', sans-serif;
     --font-sans: 'Inter Variable', sans-serif;
+    --font-display: 'Fraunces Variable', serif;
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -113,4 +115,59 @@
 
 .animate-caret-blink {
   animation: caret-blink 1s step-end infinite;
+}
+
+/* ball flowing clockwise around the auth panel's complaint-cycle ring (filed →
+   routed → assigned → resolved → filed → ...). Animates top/left directly
+   through 8 points every 45° (computed with sin/cos, not guessed) — the 4
+   stage points (0/90/180/270deg, matching CYCLE_STAGES' own 6%/50%/94%
+   exactly) plus 4 diagonal midpoints, so each animated segment only has to
+   interpolate a straight line across a 45° arc instead of 90° — small enough
+   that the chord is visually indistinguishable from the ring's actual curve
+   at this size. top/left (not offset-path) so the ball uses the exact same
+   coordinate values as the stage icons themselves — no separate path to fall
+   out of sync with. */
+@keyframes travel-ring {
+  0%   { top: 6%;    left: 50%; }
+  12.5% { top: 18.9%; left: 81.1%; }
+  25%  { top: 50%;   left: 94%; }
+  37.5% { top: 81.1%; left: 81.1%; }
+  50%  { top: 94%;   left: 50%; }
+  62.5% { top: 81.1%; left: 18.9%; }
+  75%  { top: 50%;   left: 6%; }
+  87.5% { top: 18.9%; left: 18.9%; }
+  100% { top: 6%;    left: 50%; }
+}
+
+/* Each auth-panel cycle stage gets its OWN independent @keyframes, hardcoding
+   its entire dim/bright timeline directly on the SAME 0-100% clock as
+   travel-ring above (so a bright window centered on X% here lines up with
+   travel-ring's ball being at X% too). No animation-delay anywhere, no
+   keyframe shared across elements — each stage's glow is fully self-
+   contained, so there is nothing left that could get two elements out of
+   sync with each other. Window is intentionally ASYMMETRIC around each
+   stage's own %: a short rise (starts dim until 4% before) into a brief
+   plateau, then a longer fall (back to dim by 8% after) — a symmetric window
+   made the glow visibly start rising before the ball actually arrived; this
+   shifts the felt "reveal" later, closer to the ball's real arrival, while
+   the peak stays lined up. Still safely under half the 25% gap between
+   consecutive stages. glow-filed straddles the 0%/100% seam (its center, 0%,
+   is the loop boundary) — written as ONE continuous bright region split
+   across both ends of the list, not two separate peaks. */
+@keyframes glow-filed {
+  0%, 2% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
+  8%, 92% { background-color: var(--primary); border-color: oklch(1 0 0 / 30%); }
+  96%, 100% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
+}
+@keyframes glow-routed {
+  0%, 21%, 33%, 100% { background-color: var(--primary); border-color: oklch(1 0 0 / 30%); }
+  24%, 26% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
+}
+@keyframes glow-assigned {
+  0%, 46%, 58%, 100% { background-color: var(--primary); border-color: oklch(1 0 0 / 30%); }
+  49%, 51% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
+}
+@keyframes glow-resolved {
+  0%, 71%, 83%, 100% { background-color: var(--primary); border-color: oklch(1 0 0 / 30%); }
+  74%, 76% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
 }

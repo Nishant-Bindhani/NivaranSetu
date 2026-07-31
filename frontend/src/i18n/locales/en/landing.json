@@ -118,6 +118,25 @@
       "channels": { "question": "Can I file the same complaint through WhatsApp or email instead of the website?", "answer": "Yes — web, WhatsApp, and email all work the same way. Use whichever is easiest for you." }
     }
   },
+  "auth": {
+    "login": {
+      "panelTitle": "Every complaint keeps moving.",
+      "formTitle": "Log in",
+      "formSubtitle": "Pick up right where your last complaint left off."
+    },
+    "register": {
+      "panelTitle": "One account. Every channel.",
+      "panelBody": "File on the web, over WhatsApp, or by email. However you reach out, it lands in the same place, under your name.",
+      "formTitle": "Create an account",
+      "formSubtitle": "Takes about a minute. No paperwork."
+    },
+    "cycle": {
+      "filed": "Filed",
+      "routed": "Routed",
+      "assigned": "Assigned",
+      "resolved": "Resolved"
+    }
+  },
   "footer": {
     "tagline": "Report civic issues, track them to resolution, across web, WhatsApp, and email.",
     "copyright": "All rights reserved.",

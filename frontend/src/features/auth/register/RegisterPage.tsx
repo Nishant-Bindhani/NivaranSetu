@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/ui/card'
 import { getApiErrorMessage } from '@/shared/lib/axios'
 import { useRegister } from '@/features/auth/hooks/useRegister'
+import { AuthLayout } from '@/features/auth/shared/AuthLayout'
 
 // matches backend/src/modules/auth/auth.validation.ts's registerSchema
 const registerSchema = z.object({
@@ -20,6 +21,7 @@ const registerSchema = z.object({
 type RegisterForm = z.infer<typeof registerSchema>
 
 export function RegisterPage() {
+  const { t: translate } = useTranslation('landing')
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
   const { mutate, isPending, error } = useRegister()
 
@@ -37,58 +39,59 @@ export function RegisterPage() {
 
   if (submittedEmail) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-md items-center px-6">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Check your email</CardTitle>
-            <CardDescription>
-              We sent a verification link to {submittedEmail}. Verify your email before logging in.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      <AuthLayout
+        panelTitle={translate('auth.register.panelTitle')}
+        panelBody={translate('auth.register.panelBody')}
+      >
+        <div className="w-full max-w-md">
+          <h1 className="text-center font-display text-3xl font-semibold sm:text-4xl">Check your email</h1>
+          <p className="mt-2 text-center text-base text-muted-foreground">
+            We sent a verification link to {submittedEmail}. Verify your email before logging in.
+          </p>
+        </div>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md items-center px-6">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Create an account</CardTitle>
-          <CardDescription>File and track complaints across web, WhatsApp, and email.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" {...register('name')} />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-            </div>
+    <AuthLayout
+      panelTitle={translate('auth.register.panelTitle')}
+      panelBody={translate('auth.register.panelBody')}
+    >
+      <div className="w-full max-w-md">
+        <h1 className="text-center font-display text-3xl font-semibold sm:text-4xl">{translate('auth.register.formTitle')}</h1>
+        <p className="mt-2 text-center text-base text-muted-foreground">{translate('auth.register.formSubtitle')}</p>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" {...register('email')} />
-              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="name" className="text-sm">Name</Label>
+            <Input id="name" type="text" className="h-11 text-base" {...register('name')} />
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+          </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register('password')} />
-              {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-            </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="email" className="text-sm">Email</Label>
+            <Input id="email" type="email" className="h-11 text-base" {...register('email')} />
+            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+          </div>
 
-            {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="password" className="text-sm">Password</Label>
+            <Input id="password" type="password" className="h-11 text-base" {...register('password')} />
+            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+          </div>
 
-            <Button type="submit" disabled={isPending}>
-              {isPending ? 'Creating account...' : 'Register'}
-            </Button>
-          </form>
+          {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-primary underline">Log in</Link>
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+          <Button type="submit" size="lg" className="h-11 w-full text-base" disabled={isPending}>
+            {isPending ? 'Creating account...' : 'Register'}
+          </Button>
+        </form>
+
+        <p className="mt-6 text-center text-base text-muted-foreground">
+          Already have an account? <Link to="/login" className="font-medium text-primary underline underline-offset-4">Log in</Link>
+        </p>
+      </div>
+    </AuthLayout>
   )
 }
