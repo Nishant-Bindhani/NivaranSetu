@@ -27,9 +27,11 @@ const envSchema = z.object({
   GOOGLE_CALLBACK_URL: z.string().optional(),
   GOOGLE_OAUTH_STATE_TTL: z.string().default('5m'),
 
-  // Gmail SMTP (email)
+  // Gmail API (email) — HTTPS, not SMTP; Render's free tier blocks SMTP ports
   GMAIL_USER: z.string().optional(),
-  GMAIL_APP_PASSWORD: z.string().optional(),
+  GMAIL_SENDER_CLIENT_ID: z.string().optional(),
+  GMAIL_SENDER_CLIENT_SECRET: z.string().optional(),
+  GMAIL_REFRESH_TOKEN: z.string().optional(),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().optional(),

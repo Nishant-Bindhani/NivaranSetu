@@ -1,36 +1,23 @@
-import nodemailer from 'nodemailer'
-import { lookup } from 'dns/promises'
+import { google } from 'googleapis'
 import { config } from '@config/env.js'
 
-const GMAIL_SMTP_HOST = 'smtp.gmail.com'
-
-// nodemailer's smtp-connection never actually forwards a `family` transport
-// option down to net.connect/tls.connect (confirmed by reading its source —
-// only host/port/localAddress/timeout are copied). Passing `family: 4` is
-// silently ignored, so it does NOT fix Render's ENETUNREACH-over-IPv6 hang.
-// The real fix: resolve the IPv4 address ourselves and connect to that IP
-// directly. `servername` must be set explicitly to the real hostname,
-// because nodemailer skips TLS SNI/hostname verification whenever `host`
-// looks like a raw IP (net.isIP(host) check in its source) — without this,
-// TLS would fail to validate Gmail's certificate.
+// Gmail REST API over HTTPS, not SMTP — Render's free tier blocks outbound
+// SMTP ports (25/465/587) entirely as of a Sept 2025 policy change; no
+// SMTP-level fix (IPv4, IPv6, DNS resolution) can work around a network-level
+// port block. The Gmail API sends over the same port (443) as any normal
+// website request, which isn't blocked. See NOTES.md Section 96/97 for the
+// two earlier SMTP-based attempts that didn't actually fix this.
 //
-// Re-resolved on every send rather than cached once at startup — Gmail's
-// SMTP IPs can rotate, and a stale cached IP would silently break sending
-// later with no code change to point at.
-async function createGmailTransporter() {
-  const { address } = await lookup(GMAIL_SMTP_HOST, { family: 4 })
+// Auth: a SEPARATE, dedicated OAuth client (GMAIL_SENDER_CLIENT_ID/SECRET,
+// its own Google Cloud project) from GOOGLE_CLIENT_ID — that one is for
+// Sign-in-with-Google (a user-facing feature); this one is only ever
+// authorized once, by the project owner, for nivaransetu.noreply@gmail.com
+// to send mail. GMAIL_REFRESH_TOKEN was obtained via a one-time interactive
+// script (deleted after use) and never expires unless revoked.
+const oauth2Client = new google.auth.OAuth2(config.GMAIL_SENDER_CLIENT_ID, config.GMAIL_SENDER_CLIENT_SECRET)
+oauth2Client.setCredentials({ refresh_token: config.GMAIL_REFRESH_TOKEN })
 
-  return nodemailer.createTransport({
-    host: address,
-    port: 465,
-    secure: true,
-    tls: { servername: GMAIL_SMTP_HOST },
-    auth: {
-      user: config.GMAIL_USER,
-      pass: config.GMAIL_APP_PASSWORD,
-    },
-  })
-}
+const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
 
 const COLORS = {
   primary: '#900007',
@@ -95,32 +82,51 @@ function buildEmailHtml(heading: string, body: string, buttonLabel: string, link
 `.trim()
 }
 
+// The Gmail API doesn't take {to, subject, html} as separate fields — it
+// wants the ENTIRE email (headers + body) as one raw RFC 2822 MIME message,
+// base64url-encoded. This builds that raw message by hand.
+function buildRawMessage(to: string, subject: string, html: string) {
+  const message = [
+    `From: NivaranSetu <${config.GMAIL_USER}>`,
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    'Content-Type: text/html; charset=utf-8',
+    '',
+    html,
+  ].join('\r\n')
+
+  return Buffer.from(message).toString('base64url')
+}
+
+async function sendGmail(to: string, subject: string, html: string) {
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: { raw: buildRawMessage(to, subject, html) },
+  })
+}
+
 export async function sendVerificationEmail(to: string, link: string) {
-  const transporter = await createGmailTransporter()
-  await transporter.sendMail({
-    from: config.GMAIL_USER,
+  await sendGmail(
     to,
-    subject: 'Verify your NivaranSetu account',
-    html: buildEmailHtml(
+    'Verify your NivaranSetu account',
+    buildEmailHtml(
       'Verify your email',
       "You're almost set. Click the button below to verify your email and activate your NivaranSetu account.",
       'Verify email',
       link,
     ),
-  })
+  )
 }
 
 export async function sendPasswordResetEmail(to: string, link: string) {
-  const transporter = await createGmailTransporter()
-  await transporter.sendMail({
-    from: config.GMAIL_USER,
+  await sendGmail(
     to,
-    subject: 'Reset your NivaranSetu password',
-    html: buildEmailHtml(
+    'Reset your NivaranSetu password',
+    buildEmailHtml(
       'Reset your password',
       "We received a request to reset your NivaranSetu password. Click the button below to choose a new one.",
       'Reset password',
       link,
     ),
-  })
+  )
 }
