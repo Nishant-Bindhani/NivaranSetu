@@ -1,13 +1,24 @@
 import nodemailer from 'nodemailer'
+import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
 import { config } from '@config/env.js'
 
+// `family` (force IPv4) is a real Node net.connect/tls.connect option
+// nodemailer passes through, but @types/nodemailer doesn't declare it —
+// the `as` cast is only working around that types-package gap, not
+// bypassing real validation.
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  // Render's network can't reach Gmail over IPv6 (ENETUNREACH) — the
+  // connection attempt hangs for minutes before failing. Forcing IPv4
+  // avoids the unreachable route entirely.
+  family: 4,
   auth: {
     user: config.GMAIL_USER,
     pass: config.GMAIL_APP_PASSWORD,
   },
-})
+} as SMTPTransport.Options)
 
 const COLORS = {
   primary: '#900007',

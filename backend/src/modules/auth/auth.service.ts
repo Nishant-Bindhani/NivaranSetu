@@ -8,6 +8,7 @@ import { generateToken, hashToken } from '@utils/hash.js'
 import { signAccessToken } from '@utils/jwt.js'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@utils/email.js'
 import { AppError } from '@utils/AppError.js'
+import { logger } from '@utils/logger.js'
 import {
   findUserByEmail,
   findUserById,
@@ -83,7 +84,15 @@ export async function registerUser(input: RegisterInput) {
     },
   })
 
-  await sendVerificationEmail(user.email, `${config.FRONTEND_URL}/verify?token=${rawToken}`)
+  try {
+    await sendVerificationEmail(user.email, `${config.FRONTEND_URL}/verify?token=${rawToken}`)
+  } catch (err) {
+    // registration must not fail just because the email didn't send — the
+    // account and verification token both exist either way, so the failure
+    // mode is "user requests a new verification link," not "stuck account
+    // that has to be manually deleted from the DB before retrying."
+    logger.error({ err, email: user.email }, 'Failed to send verification email')
+  }
 
   return {
     id: user.id,
