@@ -1,24 +1,36 @@
 import nodemailer from 'nodemailer'
-import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js'
+import { lookup } from 'dns/promises'
 import { config } from '@config/env.js'
 
-// `family` (force IPv4) is a real Node net.connect/tls.connect option
-// nodemailer passes through, but @types/nodemailer doesn't declare it —
-// the `as` cast is only working around that types-package gap, not
-// bypassing real validation.
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  // Render's network can't reach Gmail over IPv6 (ENETUNREACH) — the
-  // connection attempt hangs for minutes before failing. Forcing IPv4
-  // avoids the unreachable route entirely.
-  family: 4,
-  auth: {
-    user: config.GMAIL_USER,
-    pass: config.GMAIL_APP_PASSWORD,
-  },
-} as SMTPTransport.Options)
+const GMAIL_SMTP_HOST = 'smtp.gmail.com'
+
+// nodemailer's smtp-connection never actually forwards a `family` transport
+// option down to net.connect/tls.connect (confirmed by reading its source —
+// only host/port/localAddress/timeout are copied). Passing `family: 4` is
+// silently ignored, so it does NOT fix Render's ENETUNREACH-over-IPv6 hang.
+// The real fix: resolve the IPv4 address ourselves and connect to that IP
+// directly. `servername` must be set explicitly to the real hostname,
+// because nodemailer skips TLS SNI/hostname verification whenever `host`
+// looks like a raw IP (net.isIP(host) check in its source) — without this,
+// TLS would fail to validate Gmail's certificate.
+//
+// Re-resolved on every send rather than cached once at startup — Gmail's
+// SMTP IPs can rotate, and a stale cached IP would silently break sending
+// later with no code change to point at.
+async function createGmailTransporter() {
+  const { address } = await lookup(GMAIL_SMTP_HOST, { family: 4 })
+
+  return nodemailer.createTransport({
+    host: address,
+    port: 465,
+    secure: true,
+    tls: { servername: GMAIL_SMTP_HOST },
+    auth: {
+      user: config.GMAIL_USER,
+      pass: config.GMAIL_APP_PASSWORD,
+    },
+  })
+}
 
 const COLORS = {
   primary: '#900007',
@@ -84,6 +96,7 @@ function buildEmailHtml(heading: string, body: string, buttonLabel: string, link
 }
 
 export async function sendVerificationEmail(to: string, link: string) {
+  const transporter = await createGmailTransporter()
   await transporter.sendMail({
     from: config.GMAIL_USER,
     to,
@@ -98,6 +111,7 @@ export async function sendVerificationEmail(to: string, link: string) {
 }
 
 export async function sendPasswordResetEmail(to: string, link: string) {
+  const transporter = await createGmailTransporter()
   await transporter.sendMail({
     from: config.GMAIL_USER,
     to,
