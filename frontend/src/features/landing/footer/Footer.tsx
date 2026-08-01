@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { navGroups } from '@/features/landing/shared/navGroups'
+import { BridgeLogo } from '@/shared/ui/BridgeLogo'
 
 // same to/href pattern as Navbar.tsx's renderNavLink — kept separate since
 // footer links need different styling, not worth sharing one function for.
@@ -23,17 +24,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
             <Link to="/" className="flex items-center gap-2 text-lg font-semibold">
-              <svg viewBox="0 0 32 32" className="size-7" aria-hidden="true">
-                <path
-                  d="M6 22V14C6 9 10.5 5 16 5C21.5 5 26 9 26 14V22"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                <path d="M6 22H10V16H6V22Z" fill="currentColor" />
-                <path d="M22 22H26V16H22V22Z" fill="currentColor" />
-              </svg>
+              <BridgeLogo className="size-7" />
               NivaranSetu
             </Link>
             <p className="mt-3 max-w-xs text-sm text-primary-foreground/75">

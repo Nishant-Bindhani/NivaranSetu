@@ -27,9 +27,9 @@ const envSchema = z.object({
   GOOGLE_CALLBACK_URL: z.string().optional(),
   GOOGLE_OAUTH_STATE_TTL: z.string().default('5m'),
 
-  // Resend (email)
-  RESEND_API_KEY: z.string().optional(),
-  RESEND_FROM_EMAIL: z.string().optional(),
+  // Gmail SMTP (email)
+  GMAIL_USER: z.string().optional(),
+  GMAIL_APP_PASSWORD: z.string().optional(),
 
   // Cloudinary
   CLOUDINARY_CLOUD_NAME: z.string().optional(),

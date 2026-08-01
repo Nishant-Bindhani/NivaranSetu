@@ -9,6 +9,7 @@ import {
   CheckmarkCircle01Icon,
 } from '@hugeicons/core-free-icons'
 import { DotGrid } from '@/features/landing/shared/bgpatterns/DotGrid'
+import { BridgeLogo } from '@/shared/ui/BridgeLogo'
 
 type AuthLayoutProps = {
   panelTitle: string
@@ -65,47 +66,12 @@ export function AuthLayout({ panelTitle, panelBody, children }: AuthLayoutProps)
 function BrandMark({ className = '' }: { className?: string }) {
   return (
     <Link to="/" className={`flex shrink-0 items-center gap-2.5 text-2xl font-semibold ${className}`}>
-      <svg viewBox="0 0 32 32" className="mt-1 size-[1.2em] shrink-0" aria-hidden="true">
-        <path
-          d="M6 22V14C6 9 10.5 5 16 5C21.5 5 26 9 26 14V22"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <path d="M6 22H10V16H6V22Z" fill="currentColor" />
-        <path d="M22 22H26V16H22V22Z" fill="currentColor" />
-      </svg>
+      <BridgeLogo className="mt-1 size-[1.2em] shrink-0" />
       NivaranSetu
     </Link>
   )
 }
 
-// The complaint lifecycle, same 4 stages as the landing page's HowItWorks
-// section (report → route → assign → confirm), placed at 12/3/6/9 o'clock on
-// a literal ring — an actual closed loop, not a line, since a cycle has no
-// start or end. One ball flows clockwise around the ring forever; exactly one
-// stage is lit at a time, synced to the ball's real position. This is the
-// "gif" — no video/image asset exists in this project, every visual here is
-// hand-built SVG/CSS (see Hero/MapShowcase), built with plain CSS/HTML rather
-// than embedded in an SVG so the icons can be real DOM elements
-// (HugeiconsIcon), not SVG path data.
-//
-// Each stage is placed by its CENTER point (top:X%, left:Y%) plus a full
-// translate(-50%,-50%), so the icon's own center — not an edge — sits exactly
-// on the ring line. top/left percentages below are the 4 compass points of a
-// circle: 12 o'clock = (50%, 6%), 3 o'clock = (94%, 50%), 6 o'clock =
-// (50%, 94%), 9 o'clock = (6%, 50%) — 6%/94% instead of 0%/100% so the
-// icon's own radius doesn't push its edge outside the ring.
-//
-// Each stage has its OWN, fully independent, uniquely-named @keyframes
-// (glow-filed/glow-routed/glow-assigned/glow-resolved, all in index.css) that
-// hardcodes that ONE stage's entire dim/bright timeline directly — no shared
-// keyframe, no animation-delay, nothing computed at runtime. This is more
-// verbose than one shared keyframe + per-element delay, but a shared
-// timeline that has to be kept in sync across 4 separately-delayed elements
-// turned out to be fragile in practice (wrong stage lighting, then all 4
-// lighting at once) — giving up the elegance removes the whole class of bug.
 const CYCLE_STAGES = [
   { icon: Camera01Icon, labelKey: 'filed', top: '6%', left: '50%', glowAnimation: 'glow-filed' },
   { icon: Compass01Icon, labelKey: 'routed', top: '50%', left: '94%', glowAnimation: 'glow-routed' },
@@ -115,11 +81,6 @@ const CYCLE_STAGES = [
 
 const CYCLE_DURATION_S = 6.4
 
-// One shared startup pause before the whole scene starts moving — applied
-// identically to the ball AND all 4 glows, so everything still starts
-// perfectly in phase with itself, just half a second later. A per-element
-// delay is exactly what caused the earlier sync bugs; this is safe because
-// every element gets the SAME value, not 4 different ones.
 const CYCLE_START_DELAY_S = 0.6
 
 function ComplaintCycle() {

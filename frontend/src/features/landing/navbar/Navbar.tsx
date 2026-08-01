@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Menu01Icon } from '@hugeicons/core-free-icons'
 import { Button } from '@/shared/ui/button'
+import { BridgeLogo } from '@/shared/ui/BridgeLogo'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -42,17 +43,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2 text-lg font-semibold">
-          <svg viewBox="0 0 32 32" className="size-8 text-primary" aria-hidden="true">
-            <path
-              d="M6 22V14C6 9 10.5 5 16 5C21.5 5 26 9 26 14V22"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-            <path d="M6 22H10V16H6V22Z" fill="currentColor" />
-            <path d="M22 22H26V16H22V22Z" fill="currentColor" />
-          </svg>
+          <BridgeLogo className="size-8 text-primary" />
           NivaranSetu
         </Link>
 

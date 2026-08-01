@@ -71,3 +71,5 @@ export function MapShowcase() {
     </section>
   )
 }
+
+export default MapShowcase
