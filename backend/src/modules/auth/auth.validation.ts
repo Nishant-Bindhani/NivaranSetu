@@ -6,8 +6,15 @@ export const registerSchema = z.object({
   name: z.string().min(1),
 })
 
+const otpCode = z.string().regex(/^\d{6}$/, 'Enter the 6-digit code')
+
 export const verifyEmailSchema = z.object({
-  token: z.string().min(1),
+  email: z.email(),
+  code: otpCode,
+})
+
+export const resendVerificationCodeSchema = z.object({
+  email: z.email(),
 })
 
 export const loginSchema = z.object({
@@ -20,6 +27,7 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const resetPasswordSchema = z.object({
-  token: z.string().min(1),
+  email: z.email(),
+  code: otpCode,
   password: z.string().min(8),
 })

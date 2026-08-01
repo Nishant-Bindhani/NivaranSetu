@@ -2,6 +2,7 @@ import { Router } from 'express'
 import {
   register,
   verifyEmailHandler,
+  resendVerificationCodeHandler,
   login,
   refresh,
   logout,
@@ -15,10 +16,11 @@ import {
 } from './auth.controller.js'
 import { validate } from '@middleware/validate.middleware.js'
 import { requireAuth } from '@middleware/authenticate.middleware.js'
-import { authRateLimit } from '@middleware/rateLimit.middleware.js'
+import { authRateLimit, otpAttemptRateLimit } from '@middleware/rateLimit.middleware.js'
 import {
   registerSchema,
   verifyEmailSchema,
+  resendVerificationCodeSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
@@ -29,12 +31,13 @@ const router = Router()
 router.use(authRateLimit)
 
 router.post('/register', validate(registerSchema), register)
-router.post('/verify-email', validate(verifyEmailSchema), verifyEmailHandler)
+router.post('/verify-email', otpAttemptRateLimit, validate(verifyEmailSchema), verifyEmailHandler)
+router.post('/resend-verification-code', validate(resendVerificationCodeSchema), resendVerificationCodeHandler)
 router.post('/login', validate(loginSchema), login)
 router.post('/refresh-token', refresh)
 router.post('/logout', logout)
 router.post('/forgot-password', validate(forgotPasswordSchema), forgotPasswordHandler)
-router.post('/reset-password', validate(resetPasswordSchema), resetPasswordHandler)
+router.post('/reset-password', otpAttemptRateLimit, validate(resetPasswordSchema), resetPasswordHandler)
 router.get('/google', googleRedirect)
 router.get('/google/callback', googleCallback)
 router.get('/sessions', requireAuth, listSessionsHandler)

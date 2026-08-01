@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -23,7 +22,7 @@ type RegisterForm = z.infer<typeof registerSchema>
 
 export function RegisterPage() {
   const { t: translate } = useTranslation('landing')
-  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
+  const navigate = useNavigate()
   const { mutate, isPending, error } = useRegister()
 
   const {
@@ -33,26 +32,10 @@ export function RegisterPage() {
   } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
 
   function onSubmit(data: RegisterForm) {
-    mutate(data, { onSuccess: () => setSubmittedEmail(data.email) })
+    mutate(data, { onSuccess: () => navigate('/verify', { state: { email: data.email } }) })
   }
 
   const errorMessage = getApiErrorMessage(error)
-
-  if (submittedEmail) {
-    return (
-      <AuthLayout
-        panelTitle={translate('auth.register.panelTitle')}
-        panelBody={translate('auth.register.panelBody')}
-      >
-        <div className="w-full max-w-md">
-          <h1 className="text-center font-display text-3xl font-semibold sm:text-4xl">Check your email</h1>
-          <p className="mt-2 text-center text-base text-muted-foreground">
-            We sent a verification link to {submittedEmail}. Verify your email before logging in.
-          </p>
-        </div>
-      </AuthLayout>
-    )
-  }
 
   return (
     <AuthLayout

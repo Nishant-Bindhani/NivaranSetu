@@ -29,7 +29,11 @@ const COLORS = {
 
 const FONT_STACK = "'Segoe UI', Helvetica, Arial, sans-serif"
 
-function buildEmailHtml(heading: string, body: string, buttonLabel: string, link: string) {
+// Code display, not a clickable link/button — a link can be silently
+// "clicked" by an email client's link-safety scanner before the real user
+// does, burning a single-use token. A code the user has to type in by hand
+// can't be prefetched that way.
+function buildEmailHtml(heading: string, body: string, code: string) {
   return `
 <!DOCTYPE html>
 <html>
@@ -51,18 +55,15 @@ function buildEmailHtml(heading: string, body: string, buttonLabel: string, link
                 <p style="margin:0 0 28px; font-family:${FONT_STACK}; font-size:15px; line-height:1.6; color:${COLORS.mutedForeground};">
                   ${body}
                 </p>
-                <table role="presentation" cellpadding="0" cellspacing="0">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
-                    <td style="border-radius:8px; background-color:${COLORS.primary};">
-                      <a href="${link}" style="display:inline-block; padding:12px 28px; font-family:${FONT_STACK}; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">
-                        ${buttonLabel}
-                      </a>
+                    <td align="center" style="border-radius:8px; background-color:${COLORS.background}; border:1px solid ${COLORS.border}; padding:20px;">
+                      <span style="font-family:${FONT_STACK}; font-size:32px; font-weight:700; letter-spacing:8px; color:${COLORS.foreground};">${code}</span>
                     </td>
                   </tr>
                 </table>
-                <p style="margin:28px 0 0; font-family:${FONT_STACK}; font-size:13px; line-height:1.6; color:${COLORS.mutedForeground};">
-                  Or copy and paste this link into your browser:<br />
-                  <a href="${link}" style="color:${COLORS.primary}; word-break:break-all;">${link}</a>
+                <p style="margin:20px 0 0; font-family:${FONT_STACK}; font-size:13px; line-height:1.6; color:${COLORS.mutedForeground};">
+                  This code expires in 10 minutes.
                 </p>
               </td>
             </tr>
@@ -105,28 +106,26 @@ async function sendGmail(to: string, subject: string, html: string) {
   })
 }
 
-export async function sendVerificationEmail(to: string, link: string) {
+export async function sendVerificationEmail(to: string, code: string) {
   await sendGmail(
     to,
     'Verify your NivaranSetu account',
     buildEmailHtml(
       'Verify your email',
-      "You're almost set. Click the button below to verify your email and activate your NivaranSetu account.",
-      'Verify email',
-      link,
+      "You're almost set. Enter this code to verify your email and activate your NivaranSetu account.",
+      code,
     ),
   )
 }
 
-export async function sendPasswordResetEmail(to: string, link: string) {
+export async function sendPasswordResetEmail(to: string, code: string) {
   await sendGmail(
     to,
     'Reset your NivaranSetu password',
     buildEmailHtml(
       'Reset your password',
-      "We received a request to reset your NivaranSetu password. Click the button below to choose a new one.",
-      'Reset password',
-      link,
+      'We received a request to reset your NivaranSetu password. Enter this code to choose a new one.',
+      code,
     ),
   )
 }

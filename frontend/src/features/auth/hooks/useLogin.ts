@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loginRequest } from '@/features/auth/api/authApi'
 import { setCredentials } from '@/store/slices/authSlice'
+import { postLoginRedirect } from '@/features/auth/shared/postLoginRedirect'
 import type { AppDispatch } from '@/store/store'
 
 export function useLogin() {
@@ -13,10 +14,7 @@ export function useLogin() {
     mutationFn: loginRequest,
     onSuccess: (response) => {
       dispatch(setCredentials(response.data))
-      // every role lands on the same dashboard route for now — role-specific
-      // routes get added once those areas actually exist (features/officer,
-      // features/manager, features/admin)
-      navigate('/dashboard')
+      navigate(postLoginRedirect(response.data.user.role))
     },
   })
 }

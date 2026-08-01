@@ -6,6 +6,7 @@ import { config } from '@config/env.js'
 import {
   registerUser,
   verifyEmail,
+  resendVerificationCode,
   loginUser,
   refreshTokens,
   logoutUser,
@@ -34,8 +35,17 @@ export async function register(req: Request, res: Response) {
 }
 
 export async function verifyEmailHandler(req: Request, res: Response) {
-  await verifyEmail(req.body.token)
-  res.status(200).json(successMessage('Email verified successfully'))
+  const { accessToken, refreshToken, user } = await verifyEmail(req.body.email, req.body.code, {
+    deviceInfo: req.headers['user-agent'],
+    ipAddress: req.ip,
+  })
+  setRefreshTokenCookie(res, refreshToken)
+  res.status(200).json(successResponse({ accessToken, user }, 'Email verified successfully'))
+}
+
+export async function resendVerificationCodeHandler(req: Request, res: Response) {
+  await resendVerificationCode(req.body.email)
+  res.status(200).json(successMessage('If that email needs verifying, a new code has been sent'))
 }
 
 export async function login(req: Request, res: Response) {
@@ -74,7 +84,7 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
 }
 
 export async function resetPasswordHandler(req: Request, res: Response) {
-  await resetPassword(req.body.token, req.body.password)
+  await resetPassword(req.body.email, req.body.code, req.body.password)
   res.status(200).json(successMessage('Password reset successful, please log in again'))
 }
 

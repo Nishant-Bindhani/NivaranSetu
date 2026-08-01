@@ -27,7 +27,12 @@ export async function getMeRequest(accessToken: string) {
   return response.data
 }
 
-export async function verifyEmailRequest(token: string) {
-  const response = await api.post<{ success: true; message: string }>('/v1/auth/verify-email', { token })
+export async function verifyEmailRequest(input: { email: string; code: string }) {
+  const response = await api.post<ApiSuccess<LoginResult>>('/v1/auth/verify-email', input)
+  return response.data
+}
+
+export async function resendVerificationCodeRequest(email: string) {
+  const response = await api.post<{ success: true; message: string }>('/v1/auth/resend-verification-code', { email })
   return response.data
 }

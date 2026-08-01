@@ -4,7 +4,7 @@ import { prisma } from '@config/database.js'
 import { config } from '@config/env.js'
 import { redis } from '@config/redis.js'
 import { hashPassword, verifyPassword } from '@utils/password.js'
-import { generateToken, hashToken } from '@utils/hash.js'
+import { generateToken, hashToken, generateOtp, hashOtp } from '@utils/hash.js'
 import { signAccessToken } from '@utils/jwt.js'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@utils/email.js'
 import { AppError } from '@utils/AppError.js'
@@ -19,6 +19,7 @@ import {
   findVerificationToken,
   consumeVerificationToken,
   resetUserPassword,
+  deleteVerificationTokensForUser,
   createRefreshToken,
   findRefreshToken,
   deleteRefreshToken,
@@ -72,20 +73,19 @@ export async function registerUser(input: RegisterInput) {
     name: input.name,
   })
 
-  const rawToken = generateToken()
-  const tokenHash = hashToken(rawToken)
+  const code = generateOtp()
 
   await prisma.verificationToken.create({
     data: {
       userId: user.id,
-      tokenHash,
+      tokenHash: hashOtp(user.email, code),
       type: 'EMAIL_VERIFY',
       expiresAt: new Date(Date.now() + ms(config.EMAIL_VERIFY_EXPIRES_IN as ms.StringValue)),
     },
   })
 
   try {
-    await sendVerificationEmail(user.email, `${config.FRONTEND_URL}/verify?token=${rawToken}`)
+    await sendVerificationEmail(user.email, code)
   } catch (err) {
     // registration must not fail just because the email didn't send — the
     // account and verification token both exist either way, so the failure
@@ -103,15 +103,50 @@ export async function registerUser(input: RegisterInput) {
   }
 }
 
-export async function verifyEmail(rawToken: string) {
-  const tokenHash = hashToken(rawToken)
-  const token = await findVerificationToken(tokenHash, 'EMAIL_VERIFY')
+export async function verifyEmail(
+  email: string,
+  code: string,
+  device?: { deviceInfo?: string; ipAddress?: string },
+) {
+  const token = await findVerificationToken(hashOtp(email, code), 'EMAIL_VERIFY')
 
   if (!token || token.expiresAt < new Date()) {
-    throw new AppError('Invalid or expired verification link', 400)
+    throw new AppError('Invalid or expired code', 400)
   }
 
-  await consumeVerificationToken(token.id, token.userId)
+  const [user] = await consumeVerificationToken(token.id, token.userId)
+  const session = await issueSession(user, device)
+
+  return {
+    ...session,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
+  }
+}
+
+export async function resendVerificationCode(email: string) {
+  const user = await findUserByEmail(email)
+  if (!user || user.isEmailVerified) {
+    return
+  }
+
+  await deleteVerificationTokensForUser(user.id, 'EMAIL_VERIFY')
+
+  const code = generateOtp()
+  await prisma.verificationToken.create({
+    data: {
+      userId: user.id,
+      tokenHash: hashOtp(user.email, code),
+      type: 'EMAIL_VERIFY',
+      expiresAt: new Date(Date.now() + ms(config.EMAIL_VERIFY_EXPIRES_IN as ms.StringValue)),
+    },
+  })
+
+  await sendVerificationEmail(user.email, code)
 }
 
 export async function loginUser(
@@ -218,27 +253,26 @@ export async function forgotPassword(email: string) {
     return
   }
 
-  const rawToken = generateToken()
-  const tokenHash = hashToken(rawToken)
+  await deleteVerificationTokensForUser(user.id, 'PASSWORD_RESET')
 
+  const code = generateOtp()
   await prisma.verificationToken.create({
     data: {
       userId: user.id,
-      tokenHash,
+      tokenHash: hashOtp(user.email, code),
       type: 'PASSWORD_RESET',
       expiresAt: new Date(Date.now() + ms(config.PASSWORD_RESET_EXPIRES_IN as ms.StringValue)),
     },
   })
 
-  await sendPasswordResetEmail(user.email, `${config.FRONTEND_URL}/reset-password?token=${rawToken}`)
+  await sendPasswordResetEmail(user.email, code)
 }
 
-export async function resetPassword(rawToken: string, newPassword: string) {
-  const tokenHash = hashToken(rawToken)
-  const token = await findVerificationToken(tokenHash, 'PASSWORD_RESET')
+export async function resetPassword(email: string, code: string, newPassword: string) {
+  const token = await findVerificationToken(hashOtp(email, code), 'PASSWORD_RESET')
 
   if (!token || token.expiresAt < new Date()) {
-    throw new AppError('Invalid or expired reset link', 400)
+    throw new AppError('Invalid or expired code', 400)
   }
 
   const hashedPassword = await hashPassword(newPassword)

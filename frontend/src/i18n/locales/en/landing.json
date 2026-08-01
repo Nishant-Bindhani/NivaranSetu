@@ -138,12 +138,14 @@
     },
     "verifyEmail": {
       "panelTitle": "Almost there.",
-      "verifying": "Verifying your email...",
+      "formTitle": "Verify your email",
+      "formSubtitle": "Enter the 6-digit code we sent to {{email}}.",
       "successTitle": "Email verified",
-      "successBody": "Your account is ready. You can log in now.",
+      "successBody": "Your account is ready to go.",
+      "loginLink": "Click here to log in",
       "errorTitle": "Verification failed",
-      "errorBody": "This link is invalid or has expired. Try registering again to get a new one.",
-      "missingTokenBody": "This link is missing its verification code. Check the link in your email and try again."
+      "errorBody": "That code is invalid or has expired.",
+      "missingEmailBody": "Register first to get a verification code."
     }
   },
   "footer": {
