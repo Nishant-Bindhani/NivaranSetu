@@ -4,6 +4,7 @@ import { LandingPage } from '@/pages/LandingPage'
 import { LoginPage } from '@/features/auth/login/LoginPage'
 import { RegisterPage } from '@/features/auth/register/RegisterPage'
 import { VerifyEmailPage } from '@/features/auth/verifyEmail/VerifyEmailPage'
+import { OAuthCallbackPage } from '@/features/auth/oauthCallback/OAuthCallbackPage'
 import { useSettings } from '@/shared/hooks/useSettings'
 import { useSessionBootstrap } from '@/features/auth/hooks/useSessionBootstrap'
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify" element={<VerifyEmailPage />} />
+        <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
         <Route path="/dashboard" element={<div className="p-6">Dashboard (coming soon)</div>} />
       </Routes>
     </Shimmer>

@@ -10,6 +10,7 @@ import { Label } from '@/shared/ui/label'
 import { getApiErrorMessage } from '@/shared/lib/axios'
 import { useRegister } from '@/features/auth/hooks/useRegister'
 import { AuthLayout } from '@/features/auth/shared/AuthLayout'
+import { GoogleAuthButton } from '@/features/auth/shared/GoogleAuthButton'
 
 // matches backend/src/modules/auth/auth.validation.ts's registerSchema
 const registerSchema = z.object({
@@ -87,6 +88,8 @@ export function RegisterPage() {
             {isPending ? 'Creating account...' : 'Register'}
           </Button>
         </form>
+
+        <GoogleAuthButton />
 
         <p className="mt-6 text-center text-base text-muted-foreground">
           Already have an account? <Link to="/login" className="font-medium text-primary underline underline-offset-4">Log in</Link>

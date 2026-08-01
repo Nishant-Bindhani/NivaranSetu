@@ -9,6 +9,7 @@ import { Label } from '@/shared/ui/label'
 import { getApiErrorMessage } from '@/shared/lib/axios'
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { AuthLayout } from '@/features/auth/shared/AuthLayout'
+import { GoogleAuthButton } from '@/features/auth/shared/GoogleAuthButton'
 
 // matches backend/src/modules/auth/auth.validation.ts's loginSchema
 const loginSchema = z.object({
@@ -59,6 +60,8 @@ export function LoginPage() {
             {isPending ? 'Logging in...' : 'Log in'}
           </Button>
         </form>
+
+        <GoogleAuthButton />
 
         <p className="mt-6 text-center text-base text-muted-foreground">
           Don't have an account? <Link to="/register" className="font-medium text-primary underline underline-offset-4">Register</Link>
