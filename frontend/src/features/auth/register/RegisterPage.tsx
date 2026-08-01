@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+import { HugeiconsIcon } from '@hugeicons/react'
+import { ViewIcon, ViewOffIcon } from '@hugeicons/core-free-icons'
 import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
@@ -23,6 +26,7 @@ type RegisterForm = z.infer<typeof registerSchema>
 export function RegisterPage() {
   const { t: translate } = useTranslation('landing')
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
   const { mutate, isPending, error } = useRegister()
 
   const {
@@ -61,7 +65,22 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="password" className="text-sm">Password</Label>
-            <Input id="password" type="password" className="h-11 text-base" {...register('password')} />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="h-11 pr-10 text-base"
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                <HugeiconsIcon icon={showPassword ? ViewOffIcon : ViewIcon} className="size-4.5" />
+              </button>
+            </div>
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
 

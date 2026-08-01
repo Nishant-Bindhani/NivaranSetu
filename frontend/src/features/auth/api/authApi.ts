@@ -36,3 +36,13 @@ export async function resendVerificationCodeRequest(email: string) {
   const response = await api.post<{ success: true; message: string }>('/v1/auth/resend-verification-code', { email })
   return response.data
 }
+
+export async function forgotPasswordRequest(email: string) {
+  const response = await api.post<{ success: true; message: string }>('/v1/auth/forgot-password', { email })
+  return response.data
+}
+
+export async function resetPasswordRequest(input: { email: string; code: string; password: string }) {
+  const response = await api.post<{ success: true; message: string }>('/v1/auth/reset-password', input)
+  return response.data
+}

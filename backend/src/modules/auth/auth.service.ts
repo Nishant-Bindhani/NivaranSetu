@@ -163,9 +163,14 @@ export async function loginUser(
     })
 
   const user = await findUserByEmail(input.email)
-  if (!user || !user.password) {
+  if (!user) {
     await logAttempt('FAILED')
     throw new AppError('Invalid email or password', 401)
+  }
+
+  if (!user.password) {
+    await logAttempt('FAILED', user.id)
+    throw new AppError('This email is linked to a Google account — use Continue with Google to log in', 409)
   }
 
   const validPassword = await verifyPassword(user.password, input.password)
@@ -273,6 +278,11 @@ export async function resetPassword(email: string, code: string, newPassword: st
 
   if (!token || token.expiresAt < new Date()) {
     throw new AppError('Invalid or expired code', 400)
+  }
+
+  const user = await findUserById(token.userId)
+  if (user?.password && (await verifyPassword(user.password, newPassword))) {
+    throw new AppError('New password must be different from your current password', 400)
   }
 
   const hashedPassword = await hashPassword(newPassword)
