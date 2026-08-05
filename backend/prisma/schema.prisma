@@ -38,6 +38,7 @@ model User {
   loginHistory       LoginHistory[]
   sessions           Session[]
   verificationTokens VerificationToken[]
+  tickets            Ticket[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -159,4 +160,57 @@ model Department {
 
   @@index([orgId])
   @@map("departments")
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  tickets Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categories")
+}
+
+enum TicketStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  ESCALATED
+  RESOLVED
+  CLOSED
+  REOPENED
+}
+
+model Ticket {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  status      TicketStatus @default(OPEN)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Nullable, unused by any application logic in this first slice — added
+  // now because the RLS policy (built alongside this module) needs a real
+  // column to reference. A citizen's ticket leaves both null; officer
+  // assignment (a later slice) is what actually populates deptId.
+  deptId String?
+  orgId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([categoryId])
+  @@index([deptId])
+  @@index([orgId])
+  @@map("tickets")
 }
