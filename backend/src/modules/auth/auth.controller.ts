@@ -21,12 +21,12 @@ import { successResponse, successMessage } from '@utils/apiResponse.js'
 import { AppError } from '@utils/AppError.js'
 
 function setRefreshTokenCookie(res: Response, refreshToken: string) {
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: config.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: ms(config.JWT_REFRESH_EXPIRES_IN as ms.StringValue),
-  })
+  const maxAge = ms(config.JWT_REFRESH_EXPIRES_IN as ms.StringValue)
+  const secure = config.NODE_ENV === 'production'
+
+  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure, sameSite: 'lax', maxAge })
+  // hasSession: non-httpOnly, no secret — lets the frontend skip /refresh-token when it's not needed.
+  res.cookie('hasSession', '1', { httpOnly: false, secure, sameSite: 'lax', maxAge })
 }
 
 export async function register(req: Request, res: Response) {
@@ -75,6 +75,7 @@ export async function logout(req: Request, res: Response) {
   }
 
   res.clearCookie('refreshToken')
+  res.clearCookie('hasSession')
   res.status(200).json(successMessage('Logged out successfully'))
 }
 

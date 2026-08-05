@@ -10,6 +10,11 @@ export function useSessionBootstrap() {
 
   useEffect(() => {
     async function bootstrap() {
+      if (!document.cookie.includes('hasSession=1')) {
+        setIsBootstrapping(false)
+        return
+      }
+
       try {
         const { data } = await refreshTokenRequest()
         const user = await getMeRequest(data.accessToken)

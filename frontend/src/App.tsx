@@ -7,6 +7,8 @@ import { VerifyEmailPage } from '@/features/auth/verifyEmail/VerifyEmailPage'
 import { OAuthCallbackPage } from '@/features/auth/oauthCallback/OAuthCallbackPage'
 import { ForgotPasswordPage } from '@/features/auth/forgotPassword/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/features/auth/resetPassword/ResetPasswordPage'
+import { DashboardPage } from '@/pages/DashboardPage'
+import { RedirectIfAuthed } from '@/features/auth/shared/RedirectIfAuthed'
 import { useSettings } from '@/shared/hooks/useSettings'
 import { useSessionBootstrap } from '@/features/auth/hooks/useSessionBootstrap'
 
@@ -28,14 +30,14 @@ function App() {
   return (
     <Shimmer loading={isBootstrapping} {...shimmerColors}>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<RedirectIfAuthed><LandingPage /></RedirectIfAuthed>} />
+        <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
+        <Route path="/register" element={<RedirectIfAuthed><RegisterPage /></RedirectIfAuthed>} />
         <Route path="/verify" element={<VerifyEmailPage />} />
         <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/dashboard" element={<div className="p-6">Dashboard (coming soon)</div>} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Shimmer>
   )

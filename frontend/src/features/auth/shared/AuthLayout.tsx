@@ -7,6 +7,7 @@ import {
   Compass01Icon,
   ConstructionIcon,
   CheckmarkCircle01Icon,
+  ArrowLeft01Icon,
 } from '@hugeicons/core-free-icons'
 import { DotGrid } from '@/features/landing/shared/bgpatterns/DotGrid'
 import { BridgeLogo } from '@/shared/ui/BridgeLogo'
@@ -58,7 +59,16 @@ export function AuthLayout({ panelTitle, panelBody, children }: AuthLayoutProps)
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-6 py-12">{children}</div>
+      <div className="relative flex flex-1 items-center justify-center px-6 py-12">
+        <Link
+          to="/"
+          className="absolute top-4 left-4 flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground md:top-6 md:left-6"
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" />
+          Home
+        </Link>
+        {children}
+      </div>
     </div>
   )
 }

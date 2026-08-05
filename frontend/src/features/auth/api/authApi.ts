@@ -46,3 +46,8 @@ export async function resetPasswordRequest(input: { email: string; code: string;
   const response = await api.post<{ success: true; message: string }>('/v1/auth/reset-password', input)
   return response.data
 }
+
+export async function logoutRequest() {
+  const response = await api.post<{ success: true; message: string }>('/v1/auth/logout')
+  return response.data
+}

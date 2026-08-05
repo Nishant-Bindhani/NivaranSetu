@@ -1,19 +1,6 @@
 import { google } from 'googleapis'
 import { config } from '@config/env.js'
 
-// Gmail REST API over HTTPS, not SMTP — Render's free tier blocks outbound
-// SMTP ports (25/465/587) entirely as of a Sept 2025 policy change; no
-// SMTP-level fix (IPv4, IPv6, DNS resolution) can work around a network-level
-// port block. The Gmail API sends over the same port (443) as any normal
-// website request, which isn't blocked. See NOTES.md Section 96/97 for the
-// two earlier SMTP-based attempts that didn't actually fix this.
-//
-// Auth: a SEPARATE, dedicated OAuth client (GMAIL_SENDER_CLIENT_ID/SECRET,
-// its own Google Cloud project) from GOOGLE_CLIENT_ID — that one is for
-// Sign-in-with-Google (a user-facing feature); this one is only ever
-// authorized once, by the project owner, for nivaransetu.noreply@gmail.com
-// to send mail. GMAIL_REFRESH_TOKEN was obtained via a one-time interactive
-// script (deleted after use) and never expires unless revoked.
 const oauth2Client = new google.auth.OAuth2(config.GMAIL_SENDER_CLIENT_ID, config.GMAIL_SENDER_CLIENT_SECRET)
 oauth2Client.setCredentials({ refresh_token: config.GMAIL_REFRESH_TOKEN })
 
@@ -29,10 +16,6 @@ const COLORS = {
 
 const FONT_STACK = "'Segoe UI', Helvetica, Arial, sans-serif"
 
-// Code display, not a clickable link/button — a link can be silently
-// "clicked" by an email client's link-safety scanner before the real user
-// does, burning a single-use token. A code the user has to type in by hand
-// can't be prefetched that way.
 function buildEmailHtml(heading: string, body: string, code: string) {
   return `
 <!DOCTYPE html>
