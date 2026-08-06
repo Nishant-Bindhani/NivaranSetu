@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken'
 import { config } from '@config/env.js'
+import type { Role } from '@utils/roles.js'
 
 export type AccessTokenPayload = {
   userId: string
-  role: string
+  role: Role
   orgId?: string
   deptId?: string
 }

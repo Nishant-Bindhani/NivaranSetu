@@ -6,6 +6,7 @@ import { redis } from '@config/redis.js'
 import { hashPassword, verifyPassword } from '@utils/password.js'
 import { generateToken, hashToken, generateOtp, hashOtp } from '@utils/hash.js'
 import { signAccessToken } from '@utils/jwt.js'
+import type { Role } from '@utils/roles.js'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@utils/email.js'
 import { AppError } from '@utils/AppError.js'
 import { logger } from '@utils/logger.js'
@@ -35,7 +36,7 @@ const REFRESH_TOKEN_EXPIRY_MS = () => ms(config.JWT_REFRESH_EXPIRES_IN as ms.Str
 const REUSE_DETECTION_TTL_SECONDS = () => ms(config.REUSE_DETECTION_TTL as ms.StringValue) / 1000
 
 async function issueSession(
-  user: { id: string; role: string; orgId: string | null; deptId: string | null },
+  user: { id: string; role: Role; orgId: string | null; deptId: string | null },
   device?: { deviceInfo?: string; ipAddress?: string },
 ) {
   const accessToken = signAccessToken({
