@@ -1,6 +1,7 @@
 import { AppError } from '@utils/AppError.js'
-import { ROLE } from '@utils/roles.js'
+import { Role } from '@generated/prisma/enums.js'
 import type { AccessTokenPayload } from '@utils/jwt.js'
+import type { ListTicketsQuery } from './tickets.validation.js'
 import {
   createTicket as createTicketRow,
   findTicketsForUser,
@@ -22,13 +23,13 @@ export async function createTicket(
   return { id: ticket.id }
 }
 
-export async function listMyTickets(user: AccessTokenPayload) {
-  return findTicketsForUser(user)
+export async function listMyTickets(filters: ListTicketsQuery, user: AccessTokenPayload) {
+  return findTicketsForUser(filters, user)
 }
 
 export async function getTicketById(id: string, user: AccessTokenPayload) {
   const ticket = await findTicketByIdForUser(id, user)
-  if (!ticket || (user.role === ROLE.CITIZEN && ticket.userId !== user.userId)) {
+  if (!ticket || (user.role === Role.CITIZEN && ticket.userId !== user.userId)) {
     throw new AppError('Ticket not found', 404)
   }
   return ticket

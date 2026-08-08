@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { config } from '@config/env.js'
-import type { Role } from '@utils/roles.js'
+import type { Role } from '@generated/prisma/enums.js'
 
 export type AccessTokenPayload = {
   userId: string

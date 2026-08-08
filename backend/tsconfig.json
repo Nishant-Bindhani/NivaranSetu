@@ -24,7 +24,8 @@
       "@ai/*": ["./src/ai/*"],
       "@rag/*": ["./src/rag/*"],
       "@jobs/*": ["./src/jobs/*"],
-      "@types/*": ["./src/types/*"]
+      "@types/*": ["./src/types/*"],
+      "@generated/*": ["./src/generated/*"]
     }
   },
   "include": ["src/**/*"],

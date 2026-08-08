@@ -1,6 +1,8 @@
 import { scopedPrisma } from '@config/database.js'
-import { Prisma } from '../../generated/prisma/client.js'
+import { Prisma } from '@generated/prisma/client.js'
 import type { AccessTokenPayload } from '@utils/jwt.js'
+import { decodeCursor, encodeCursor } from '@utils/cursor.js'
+import type { ListTicketsQuery } from './tickets.validation.js'
 
 // Runs `query` inside a DB transaction, after telling Postgres who the
 // current user is (via SET LOCAL). RLS policies on the tickets table read
@@ -27,10 +29,48 @@ export function createTicket(
   return withUserScope(user, (db) => db.ticket.create({ data }))
 }
 
-export function findTicketsForUser(user: AccessTokenPayload) {
-  return withUserScope(user, (db) =>
-    db.ticket.findMany({ orderBy: { createdAt: 'desc' }, include: { category: true } }),
-  )
+export function findTicketsForUser(filters: ListTicketsQuery, user: AccessTokenPayload) {
+  return withUserScope(user, async (db) => {
+    const { limit, cursor, search, status, category } = filters
+    const cursorPosition = cursor ? decodeCursor(cursor) : null
+
+    const where: Prisma.TicketWhereInput = {
+      AND: [
+        search
+          ? {
+              OR: [
+                { title: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+              ],
+            }
+          : {},
+        status ? { status } : {},
+        category ? { category: { name: category } } : {},
+        cursorPosition
+          ? {
+              OR: [
+                { createdAt: { lt: new Date(cursorPosition.createdAt) } },
+                { createdAt: new Date(cursorPosition.createdAt), id: { lt: cursorPosition.id } },
+              ],
+            }
+          : {},
+      ],
+    }
+
+    const rows = await db.ticket.findMany({
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: limit + 1,
+      include: { category: true },
+    })
+
+    const hasMore = rows.length > limit
+    const tickets = hasMore ? rows.slice(0, limit) : rows
+    const last = tickets.at(-1)
+    const nextCursor = hasMore && last ? encodeCursor({ id: last.id, createdAt: last.createdAt.toISOString() }) : null
+
+    return { tickets, nextCursor }
+  })
 }
 
 export function findTicketByIdForUser(id: string, user: AccessTokenPayload) {
