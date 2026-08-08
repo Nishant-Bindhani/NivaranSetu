@@ -7,8 +7,11 @@ import { VerifyEmailPage } from '@/features/auth/verifyEmail/VerifyEmailPage'
 import { OAuthCallbackPage } from '@/features/auth/oauthCallback/OAuthCallbackPage'
 import { ForgotPasswordPage } from '@/features/auth/forgotPassword/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/features/auth/resetPassword/ResetPasswordPage'
-import { DashboardPage } from '@/pages/DashboardPage'
+import { CitizenDashboardPage } from '@/features/dashboard/CitizenDashboardPage'
+import { NewTicketPage } from '@/features/tickets/newTicket/NewTicketPage'
+import { TicketDetailPage } from '@/features/tickets/ticketDetail/TicketDetailPage'
 import { RedirectIfAuthed } from '@/features/auth/shared/RedirectIfAuthed'
+import { RequireAuth } from '@/features/auth/shared/RequireAuth'
 import { useSettings } from '@/shared/hooks/useSettings'
 import { useSessionBootstrap } from '@/features/auth/hooks/useSessionBootstrap'
 
@@ -37,7 +40,9 @@ function App() {
         <Route path="/oauth-callback" element={<OAuthCallbackPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/citizen-dashboard" element={<RequireAuth isBootstrapping={isBootstrapping}><CitizenDashboardPage /></RequireAuth>} />
+        <Route path="/tickets/new" element={<RequireAuth isBootstrapping={isBootstrapping}><NewTicketPage /></RequireAuth>} />
+        <Route path="/tickets/:id" element={<RequireAuth isBootstrapping={isBootstrapping}><TicketDetailPage /></RequireAuth>} />
       </Routes>
     </Shimmer>
   )
