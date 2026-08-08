@@ -23,7 +23,7 @@ export function OAuthCallbackPage() {
       try {
         const user = await getMeRequest(accessToken)
         dispatch(setCredentials({ user, accessToken }))
-        navigate('/dashboard', { replace: true })
+        navigate('/citizen-dashboard', { replace: true })
       } catch {
         setFailed(true)
       }
