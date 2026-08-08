@@ -1,4 +1,4 @@
-import { prisma } from '@config/database.js'
+import { scopedPrisma } from '@config/database.js'
 import { Prisma } from '../../generated/prisma/client.js'
 import type { AccessTokenPayload } from '@utils/jwt.js'
 
@@ -9,11 +9,13 @@ async function withUserScope<T>(
   user: AccessTokenPayload,
   query: (db: Prisma.TransactionClient) => Promise<T>,
 ) {
-  return prisma.$transaction(async (db) => {
-    await db.$executeRaw`SET LOCAL app.current_user_id = ${user.userId}`
-    await db.$executeRaw`SET LOCAL app.current_user_role = ${user.role}`
-    await db.$executeRaw`SET LOCAL app.current_dept_id = ${user.deptId ?? ''}`
-    await db.$executeRaw`SET LOCAL app.current_org_id = ${user.orgId ?? ''}`
+  return scopedPrisma.$transaction(async (db) => {
+    // SET LOCAL itself can't take a bind parameter for the value — only
+    // set_config() (a real function call) can, so that's used instead.
+    await db.$executeRaw`SELECT set_config('app.current_user_id', ${user.userId}, true)`
+    await db.$executeRaw`SELECT set_config('app.current_user_role', ${user.role}, true)`
+    await db.$executeRaw`SELECT set_config('app.current_dept_id', ${user.deptId ?? ''}, true)`
+    await db.$executeRaw`SELECT set_config('app.current_org_id', ${user.orgId ?? ''}, true)`
     return query(db)
   })
 }
@@ -38,9 +40,9 @@ export function findTicketByIdForUser(id: string, user: AccessTokenPayload) {
 }
 
 export function findCategoryById(id: string) {
-  return prisma.category.findUnique({ where: { id } })
+  return scopedPrisma.category.findUnique({ where: { id } })
 }
 
 export function listActiveCategories() {
-  return prisma.category.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } })
+  return scopedPrisma.category.findMany({ where: { isActive: true }, orderBy: { name: 'asc' } })
 }

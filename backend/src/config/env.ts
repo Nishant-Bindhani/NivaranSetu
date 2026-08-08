@@ -9,6 +9,7 @@ const envSchema = z.object({
 
   // Database
   DATABASE_URL: z.string().min(1),
+  APP_DATABASE_URL: z.string().min(1),
 
   // Redis
   REDIS_URL: z.string().min(1),
