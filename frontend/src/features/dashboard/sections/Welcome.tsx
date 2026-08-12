@@ -2,14 +2,12 @@ import { useSelector } from 'react-redux'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Alert02Icon } from '@hugeicons/core-free-icons'
 import type { RootState } from '@/store/store'
-import { useMyTickets } from '@/features/tickets/hooks/useMyTickets'
+import { useMyTicketCount } from '@/features/tickets/hooks/useMyTicketCount'
 import { DotGrid } from '@/features/landing/shared/bgpatterns/DotGrid'
 
 export function Welcome() {
   const user = useSelector((state: RootState) => state.auth.user)
-  const { data: tickets } = useMyTickets()
-
-  const openCount = tickets?.filter((ticket) => ticket.status === 'OPEN').length ?? 0
+  const { data: openCount = 0 } = useMyTicketCount('OPEN')
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-rose-50 via-rose-50/60 to-amber-50/40 shadow-[0_8px_24px_-12px_rgb(0_0_0_/_0.15)] dark:from-transparent dark:via-transparent dark:to-transparent">

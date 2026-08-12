@@ -30,6 +30,13 @@ export async function listMyTicketsRequest(filters: ListTicketsFilters, cursor?:
   return response.data
 }
 
+export async function getMyTicketCountRequest(status?: TicketStatus) {
+  const response = await api.get<ApiSuccess<{ count: number }>>('/v1/tickets/count', {
+    params: { status },
+  })
+  return response.data
+}
+
 export async function getTicketRequest(id: string) {
   const response = await api.get<ApiSuccess<Ticket>>(`/v1/tickets/${id}`)
   return response.data

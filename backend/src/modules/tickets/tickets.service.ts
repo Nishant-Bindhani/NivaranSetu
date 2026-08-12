@@ -1,10 +1,12 @@
 import { AppError } from '@utils/AppError.js'
 import { Role } from '@generated/prisma/enums.js'
+import type { TicketStatus } from '@generated/prisma/enums.js'
 import type { AccessTokenPayload } from '@utils/jwt.js'
 import type { ListTicketsQuery } from './tickets.validation.js'
 import {
   createTicket as createTicketRow,
   findTicketsForUser,
+  countTicketsForUser,
   findTicketByIdForUser,
   findCategoryById,
   listActiveCategories,
@@ -25,6 +27,10 @@ export async function createTicket(
 
 export async function listMyTickets(filters: ListTicketsQuery, user: AccessTokenPayload) {
   return findTicketsForUser(filters, user)
+}
+
+export async function countMyTickets(status: TicketStatus | undefined, user: AccessTokenPayload) {
+  return countTicketsForUser(status, user)
 }
 
 export async function getTicketById(id: string, user: AccessTokenPayload) {

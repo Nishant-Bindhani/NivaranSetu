@@ -2,10 +2,11 @@ import type { Request, Response } from 'express'
 import {
   createTicket,
   listMyTickets,
+  countMyTickets,
   getTicketById,
   listCategories,
 } from './tickets.service.js'
-import type { ListTicketsQuery } from './tickets.validation.js'
+import type { ListTicketsQuery, CountTicketsQuery } from './tickets.validation.js'
 import { successResponse } from '@utils/apiResponse.js'
 import { AppError } from '@utils/AppError.js'
 
@@ -18,6 +19,12 @@ export async function listMyTicketsHandler(req: Request, res: Response) {
   if (!req.user) throw new AppError('Not authenticated', 401)
   const filters = req.validatedQuery as ListTicketsQuery
   res.status(200).json(successResponse(await listMyTickets(filters, req.user), 'Your complaints'))
+}
+
+export async function countMyTicketsHandler(req: Request, res: Response) {
+  if (!req.user) throw new AppError('Not authenticated', 401)
+  const { status } = req.validatedQuery as CountTicketsQuery
+  res.status(200).json(successResponse({ count: await countMyTickets(status, req.user) }, 'Ticket count'))
 }
 
 export async function getTicketByIdHandler(req: Request, res: Response) {

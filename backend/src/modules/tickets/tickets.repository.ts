@@ -1,5 +1,6 @@
 import { scopedPrisma } from '@config/database.js'
 import { Prisma } from '@generated/prisma/client.js'
+import type { TicketStatus } from '@generated/prisma/enums.js'
 import type { AccessTokenPayload } from '@utils/jwt.js'
 import { decodeCursor, encodeCursor } from '@utils/cursor.js'
 import type { ListTicketsQuery } from './tickets.validation.js'
@@ -71,6 +72,10 @@ export function findTicketsForUser(filters: ListTicketsQuery, user: AccessTokenP
 
     return { tickets, nextCursor }
   })
+}
+
+export function countTicketsForUser(status: TicketStatus | undefined, user: AccessTokenPayload) {
+  return withUserScope(user, (db) => db.ticket.count({ where: status ? { status } : {} }))
 }
 
 export function findTicketByIdForUser(id: string, user: AccessTokenPayload) {

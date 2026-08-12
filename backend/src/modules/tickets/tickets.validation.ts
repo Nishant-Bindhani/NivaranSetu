@@ -16,3 +16,9 @@ export const listTicketsQuerySchema = z.object({
 })
 
 export type ListTicketsQuery = z.infer<typeof listTicketsQuerySchema>
+
+export const countTicketsQuerySchema = z.object({
+  status: z.enum(TicketStatus).optional(),
+})
+
+export type CountTicketsQuery = z.infer<typeof countTicketsQuerySchema>
