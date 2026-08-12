@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowDown01Icon, Tick02Icon } from "@hugeicons/core-free-icons"
