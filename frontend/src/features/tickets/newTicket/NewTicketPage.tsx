@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -9,6 +9,7 @@ import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Label } from '@/shared/ui/label'
 import { Textarea } from '@/shared/ui/textarea'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select'
 import { getApiErrorMessage } from '@/shared/lib/axios'
 import { useCreateTicket } from '@/features/tickets/hooks/useCreateTicket'
 import { useCategories } from '@/features/tickets/hooks/useCategories'
@@ -29,6 +30,7 @@ export function NewTicketPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateTicketForm>({ resolver: zodResolver(createTicketSchema) })
@@ -48,7 +50,7 @@ export function NewTicketPage() {
           Back
         </Link>
 
-        <h1 className="mt-4 font-display text-2xl font-semibold">File a Complaint</h1>
+        <h1 className="mt-4 font-oswald text-2xl font-medium tracking-tight uppercase">File a Complaint</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-5">
           <div className="flex flex-col gap-2">
@@ -60,18 +62,25 @@ export function NewTicketPage() {
           <div className="flex flex-col gap-2">
             <Label htmlFor="categoryId">Category</Label>
             <Shimmer loading={categoriesLoading}>
-              <select
-                id="categoryId"
-                {...register('categoryId')}
-                className="h-7 w-full min-w-0 rounded-md border border-input bg-input/20 px-2 py-0.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30"
-              >
-                <option value="">Select a category</option>
-                {categories?.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <Controller
+                name="categoryId"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange} items={categories?.map((c) => ({ value: c.id, label: c.name })) ?? []}>
+                    <SelectTrigger id="categoryId">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories?.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
             </Shimmer>
             {errors.categoryId && <p className="text-sm text-destructive">{errors.categoryId.message}</p>}
           </div>

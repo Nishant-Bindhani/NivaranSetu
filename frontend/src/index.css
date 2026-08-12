@@ -4,6 +4,7 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/oswald";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,6 +12,7 @@
     --font-heading: 'Space Grotesk Variable', sans-serif;
     --font-sans: 'Inter Variable', sans-serif;
     --font-display: 'Fraunces Variable', serif;
+    --font-oswald: 'Oswald Variable', sans-serif;
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
@@ -170,4 +172,13 @@
 @keyframes glow-resolved {
   0%, 71%, 83%, 100% { background-color: var(--primary); border-color: oklch(1 0 0 / 30%); }
   74%, 76% { background-color: color-mix(in oklch, var(--primary), white 35%); border-color: white; }
+}
+
+/* Scrollbar hidden entirely — page still scrolls normally (wheel, trackpad,
+   keyboard), just with no visible scrollbar in any browser. */
+html {
+  scrollbar-width: none;
+}
+::-webkit-scrollbar {
+  display: none;
 }

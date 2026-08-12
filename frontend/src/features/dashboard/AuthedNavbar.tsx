@@ -10,7 +10,7 @@ export function AuthedNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link to="/citizen-dashboard" className="flex items-center gap-2 text-lg font-semibold">
+        <Link to="/citizen-dashboard" className="flex items-center gap-2 font-oswald text-lg font-medium tracking-tight uppercase">
           <BridgeLogo className="size-8 text-primary" />
           NivaranSetu
         </Link>

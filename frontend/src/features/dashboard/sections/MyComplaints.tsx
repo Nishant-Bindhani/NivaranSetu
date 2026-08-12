@@ -7,11 +7,13 @@ import { Button } from '@/shared/ui/button'
 import { Input } from '@/shared/ui/input'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/shared/ui/table'
 import { Badge } from '@/shared/ui/badge'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select'
 import { Calendar } from '@/shared/ui/calendar'
 import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover'
 import { useMyTickets } from '@/features/tickets/hooks/useMyTickets'
 import type { TicketStatus } from '@/features/tickets/api/ticketsApi'
 import { useLoadMoreOnScroll } from '@/shared/hooks/useLoadMoreOnScroll'
+import { cn } from '@/shared/lib/utils'
 
 function toISODate(date: Date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -29,9 +31,6 @@ const STATUS_VARIANT: Record<TicketStatus, 'default' | 'secondary' | 'destructiv
 
 const STATUS_OPTIONS: TicketStatus[] = ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED', 'RESOLVED', 'CLOSED', 'REOPENED']
 
-const selectClassName =
-  'h-7 rounded-md border border-input bg-input/20 px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30'
-
 const dateFormatter = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
 
 export function MyComplaints() {
@@ -41,7 +40,7 @@ export function MyComplaints() {
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined)
   const [dateTo, setDateTo] = useState<Date | undefined>(new Date())
 
-  const { data, isLoading, error, fetchNextPage, hasNextPage } = useMyTickets({
+  const { data, isLoading, isFetching, error, fetchNextPage, hasNextPage } = useMyTickets({
     search: search || undefined,
     status: status || undefined,
     dateFrom: dateFrom ? toISODate(dateFrom) : undefined,
@@ -56,7 +55,7 @@ export function MyComplaints() {
   return (
     <section className="mx-auto max-w-4xl p-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-lg font-semibold">Your Complaints</h2>
+        <h2 className="font-oswald text-xl font-medium tracking-tight uppercase">Your Complaints</h2>
         <Button size="sm" nativeButton={false} render={<Link to="/tickets/new">+ File a Complaint</Link>} />
       </div>
 
@@ -65,14 +64,23 @@ export function MyComplaints() {
           <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search complaints..." className="pl-7" />
         </div>
-        <select value={status} onChange={(e) => setStatus(e.target.value as TicketStatus | '')} className={selectClassName}>
-          <option value="">All statuses</option>
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+        <Select
+          value={status || 'ALL'}
+          onValueChange={(value) => setStatus(value === 'ALL' ? '' : (value as TicketStatus))}
+          items={[{ value: 'ALL', label: 'All statuses' }, ...STATUS_OPTIONS.map((s) => ({ value: s, label: s }))]}
+        >
+          <SelectTrigger className="w-auto min-w-[130px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All statuses</SelectItem>
+            {STATUS_OPTIONS.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Popover>
           <PopoverTrigger
             render={
@@ -112,25 +120,20 @@ export function MyComplaints() {
             <Calendar
               mode="single"
               selected={dateTo}
-              onSelect={setDateTo}
+              onSelect={(date) => date && setDateTo(date)}
               disabled={dateFrom ? { before: dateFrom, after: new Date() } : { after: new Date() }}
               endMonth={new Date()}
             />
-            <div className="flex justify-end gap-1 border-t p-2">
+            <div className="flex justify-end border-t p-2">
               <Button variant="ghost" size="sm" onClick={() => setDateTo(new Date())}>
                 Today
               </Button>
-              {dateTo && (
-                <Button variant="ghost" size="sm" onClick={() => setDateTo(undefined)}>
-                  Clear
-                </Button>
-              )}
             </div>
           </PopoverContent>
         </Popover>
       </div>
 
-      <div className="mt-4">
+      <div className="animate-in fade-in mt-4 duration-500">
         {error && <p className="text-sm text-destructive">Couldn't load your complaints. Try refreshing.</p>}
 
         {!isLoading && !error && tickets.length === 0 && (
@@ -145,7 +148,7 @@ export function MyComplaints() {
 
         {(isLoading || tickets.length > 0) && (
           <Shimmer loading={isLoading}>
-            <Table>
+            <Table className={cn('transition-opacity', isFetching && !isLoading && 'opacity-60')}>
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>

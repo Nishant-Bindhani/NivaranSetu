@@ -26,7 +26,7 @@ function SuccessScreen({ id }: { id: string }) {
           <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-11" strokeWidth={2} />
         </div>
 
-        <h1 className="mt-6 font-display text-3xl font-bold text-balance">Your complaint has been raised successfully!</h1>
+        <h1 className="mt-6 font-oswald text-3xl font-medium text-balance">Your complaint has been raised successfully!</h1>
         <p className="mt-3 text-white/90">We'll notify you as your complaint progresses.</p>
 
         <div className="mt-6 flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm">
@@ -93,7 +93,7 @@ export function TicketDetailPage() {
           <Shimmer loading={isLoading}>
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h1 className="font-display text-2xl font-semibold">{ticket?.title ?? 'Sample complaint title'}</h1>
+                <h1 className="font-oswald text-2xl font-medium">{ticket?.title ?? 'Sample complaint title'}</h1>
                 <Badge variant="outline">{ticket?.status ?? 'OPEN'}</Badge>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">{ticket?.category.name ?? 'Category'}</p>
