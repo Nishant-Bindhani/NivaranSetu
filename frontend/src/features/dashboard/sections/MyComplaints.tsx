@@ -1,12 +1,15 @@
+import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Shimmer } from '@shimmer-from-structure/react'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { FileEmpty02Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { FileEmpty02Icon, ArrowRight01Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import { Button } from '@/shared/ui/button'
+import { Input } from '@/shared/ui/input'
 import { Card, CardHeader, CardTitle, CardDescription, CardAction } from '@/shared/ui/card'
 import { Badge } from '@/shared/ui/badge'
 import { useMyTickets } from '@/features/tickets/hooks/useMyTickets'
 import type { TicketStatus } from '@/features/tickets/api/ticketsApi'
+import { useLoadMoreOnScroll } from '@/shared/hooks/useLoadMoreOnScroll'
 
 const STATUS_VARIANT: Record<TicketStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   OPEN: 'default',
@@ -18,14 +21,45 @@ const STATUS_VARIANT: Record<TicketStatus, 'default' | 'secondary' | 'destructiv
   REOPENED: 'destructive',
 }
 
+const STATUS_OPTIONS: TicketStatus[] = ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED', 'RESOLVED', 'CLOSED', 'REOPENED']
+
+const selectClassName =
+  'h-7 rounded-md border border-input bg-input/20 px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 dark:bg-input/30'
+
 export function MyComplaints() {
-  const { data: tickets, isLoading, error } = useMyTickets()
+  const [search, setSearch] = useState('')
+  const [status, setStatus] = useState<TicketStatus | ''>('')
+
+  const { data, isLoading, error, fetchNextPage, hasNextPage } = useMyTickets({
+    search: search || undefined,
+    status: status || undefined,
+  })
+
+  const tickets = useMemo(() => data?.pages.flatMap((page) => page.data.tickets) ?? [], [data])
+
+  const loadMore = useCallback(() => fetchNextPage(), [fetchNextPage])
+  const markerRef = useLoadMoreOnScroll(loadMore, Boolean(hasNextPage))
 
   return (
     <section className="mx-auto max-w-2xl p-6">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-lg font-semibold">Your Complaints</h2>
         <Button size="sm" nativeButton={false} render={<Link to="/tickets/new">+ File a Complaint</Link>} />
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <div className="relative flex-1 min-w-[160px]">
+          <HugeiconsIcon icon={Search01Icon} className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search complaints..." className="pl-7" />
+        </div>
+        <select value={status} onChange={(e) => setStatus(e.target.value as TicketStatus | '')} className={selectClassName}>
+          <option value="">All statuses</option>
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-4 flex flex-col gap-3">
@@ -49,7 +83,7 @@ export function MyComplaints() {
 
         {error && <p className="text-sm text-destructive">Couldn't load your complaints. Try refreshing.</p>}
 
-        {!isLoading && !error && tickets?.length === 0 && (
+        {!isLoading && !error && tickets.length === 0 && (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
             <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
               <HugeiconsIcon icon={FileEmpty02Icon} className="size-7 text-primary" />
@@ -59,7 +93,7 @@ export function MyComplaints() {
           </div>
         )}
 
-        {tickets?.map((ticket) => (
+        {tickets.map((ticket) => (
           <Link key={ticket.id} to={`/tickets/${ticket.id}`} className="group">
             <Card className="border-l-4 border-l-primary/60 transition-all group-hover:-translate-y-0.5 group-hover:border-l-primary group-hover:shadow-lg group-hover:shadow-primary/5">
               <CardHeader>
@@ -76,6 +110,8 @@ export function MyComplaints() {
             </Card>
           </Link>
         ))}
+
+        {hasNextPage && <div ref={markerRef} className="h-1" />}
       </div>
     </section>
   )

@@ -19,7 +19,10 @@ export function validate(schema: ZodType) {
 
 export function validateQuery(schema: ZodType) {
   return (req: Request, _res: Response, next: NextFunction) => {
-    req.query = parseOrThrow(schema, req.query) as typeof req.query
+    // req.query can't be reassigned or reliably mutated in Express 5 (it's
+    // a getter-only property, re-derived from the URL) — the validated,
+    // coerced result is stored separately instead.
+    req.validatedQuery = parseOrThrow(schema, req.query)
     next()
   }
 }

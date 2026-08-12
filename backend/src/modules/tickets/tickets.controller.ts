@@ -16,8 +16,7 @@ export async function createTicketHandler(req: Request, res: Response) {
 
 export async function listMyTicketsHandler(req: Request, res: Response) {
   if (!req.user) throw new AppError('Not authenticated', 401)
-  // validateQuery has already parsed/coerced req.query into this shape at runtime
-  const filters = req.query as unknown as ListTicketsQuery
+  const filters = req.validatedQuery as ListTicketsQuery
   res.status(200).json(successResponse(await listMyTickets(filters, req.user), 'Your complaints'))
 }
 
