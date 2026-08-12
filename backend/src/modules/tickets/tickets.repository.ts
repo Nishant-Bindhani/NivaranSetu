@@ -32,7 +32,7 @@ export function createTicket(
 
 export function findTicketsForUser(filters: ListTicketsQuery, user: AccessTokenPayload) {
   return withUserScope(user, async (db) => {
-    const { limit, cursor, search, status, category } = filters
+    const { limit, cursor, search, status, category, dateFrom, dateTo } = filters
     const cursorPosition = cursor ? decodeCursor(cursor) : null
 
     const where: Prisma.TicketWhereInput = {
@@ -47,6 +47,8 @@ export function findTicketsForUser(filters: ListTicketsQuery, user: AccessTokenP
           : {},
         status ? { status } : {},
         category ? { category: { name: category } } : {},
+        dateFrom ? { createdAt: { gte: new Date(`${dateFrom}T00:00:00.000Z`) } } : {},
+        dateTo ? { createdAt: { lte: new Date(`${dateTo}T23:59:59.999Z`) } } : {},
         cursorPosition
           ? {
               OR: [

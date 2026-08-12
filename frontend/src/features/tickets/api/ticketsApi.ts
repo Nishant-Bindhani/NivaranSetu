@@ -20,7 +20,13 @@ export async function createTicketRequest(input: CreateTicketInput) {
   return response.data
 }
 
-export type ListTicketsFilters = { search?: string; status?: TicketStatus; category?: string }
+export type ListTicketsFilters = {
+  search?: string
+  status?: TicketStatus
+  category?: string
+  dateFrom?: string
+  dateTo?: string
+}
 export type ListTicketsResult = { tickets: Ticket[]; nextCursor: string | null }
 
 export async function listMyTicketsRequest(filters: ListTicketsFilters, cursor?: string) {

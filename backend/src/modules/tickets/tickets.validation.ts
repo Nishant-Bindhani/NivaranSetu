@@ -13,6 +13,8 @@ export const listTicketsQuerySchema = z.object({
   search: z.string().min(1).optional(),
   status: z.enum(TicketStatus).optional(),
   category: z.string().min(1).optional(),
+  dateFrom: z.iso.date().optional(),
+  dateTo: z.iso.date().optional(),
 })
 
 export type ListTicketsQuery = z.infer<typeof listTicketsQuerySchema>
