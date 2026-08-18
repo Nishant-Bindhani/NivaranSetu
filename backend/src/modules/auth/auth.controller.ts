@@ -23,10 +23,14 @@ import { AppError } from '@utils/AppError.js'
 function setRefreshTokenCookie(res: Response, refreshToken: string) {
   const maxAge = ms(config.JWT_REFRESH_EXPIRES_IN as ms.StringValue)
   const secure = config.NODE_ENV === 'production'
+  // frontend (vercel.app) and backend (onrender.com) are different sites in
+  // production, so cookies need SameSite=None to be sent on cross-site
+  // fetch/XHR at all — None requires Secure, hence tying this to NODE_ENV.
+  const sameSite = config.NODE_ENV === 'production' ? 'none' : 'lax'
 
-  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure, sameSite: 'lax', maxAge })
+  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure, sameSite, maxAge })
   // hasSession: non-httpOnly, no secret — lets the frontend skip /refresh-token when it's not needed.
-  res.cookie('hasSession', '1', { httpOnly: false, secure, sameSite: 'lax', maxAge })
+  res.cookie('hasSession', '1', { httpOnly: false, secure, sameSite, maxAge })
 }
 
 export async function register(req: Request, res: Response) {
