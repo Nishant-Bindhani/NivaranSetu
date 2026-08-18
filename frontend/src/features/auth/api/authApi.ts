@@ -15,9 +15,20 @@ export async function loginRequest(input: LoginInput) {
   return response.data
 }
 
-export async function refreshTokenRequest() {
-  const response = await api.post<ApiSuccess<{ accessToken: string }>>('/v1/auth/refresh-token')
-  return response.data
+// Single-flight: refresh tokens rotate on use, so two concurrent calls (e.g.
+// React StrictMode double-invoking useSessionBootstrap's effect) would have
+// the second one reuse an already-rotated token — the backend's reuse
+// detection then treats that as theft and revokes the whole session.
+let refreshTokenPromise: Promise<ApiSuccess<{ accessToken: string }>> | null = null
+
+export function refreshTokenRequest() {
+  refreshTokenPromise ??= api
+    .post<ApiSuccess<{ accessToken: string }>>('/v1/auth/refresh-token')
+    .then((response) => response.data)
+    .finally(() => {
+      refreshTokenPromise = null
+    })
+  return refreshTokenPromise
 }
 
 export async function getMeRequest(accessToken: string) {
